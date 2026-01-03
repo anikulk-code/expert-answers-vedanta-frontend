@@ -14,7 +14,11 @@ function App() {
     
     try {
       const apiUrl = process.env.REACT_APP_API_URL || 'http://localhost:8000';
-      const response = await fetch(`${apiUrl}/api/answers?topic=Vedanta&author=Sarvapriyananda&count=10`);
+      // Use the question as the topic, default to "Vedanta" if empty
+      const topic = question.trim() || 'Vedanta';
+      const response = await fetch(
+        `${apiUrl}/api/answers?topic=${encodeURIComponent(topic)}&author=Sarvapriyananda&count=10`
+      );
       
       if (!response.ok) {
         throw new Error('Failed to fetch answers');
