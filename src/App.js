@@ -2,10 +2,10 @@ import React, { useState } from 'react';
 import './App.css';
 import QuestionForm from './components/QuestionForm';
 import AnswerList from './components/AnswerList';
-
-// Dummy change for redeploy
+import TagsExplorer from './components/TagsExplorer';
 
 function App() {
+  const [activeTab, setActiveTab] = useState('search'); // 'search' or 'explore'
   const [answers, setAnswers] = useState([]);
   const [relatedQuestion, setRelatedQuestion] = useState(null);
   const [relatedQuestions, setRelatedQuestions] = useState(null);
@@ -100,29 +100,52 @@ function App() {
       </header>
       
       <main className="App-main">
-        <QuestionForm onSubmit={handleQuestionSubmit} loading={loading} />
-        
-        {loading && (
-          <div className="loading-message">
-            {loadingMessage}
-          </div>
+        <div className="tabs">
+          <button
+            className={`tab-button ${activeTab === 'search' ? 'active' : ''}`}
+            onClick={() => setActiveTab('search')}
+          >
+            Search
+          </button>
+          <button
+            className={`tab-button ${activeTab === 'explore' ? 'active' : ''}`}
+            onClick={() => setActiveTab('explore')}
+          >
+            Explore by Topic
+          </button>
+        </div>
+
+        {activeTab === 'search' && (
+          <>
+            <QuestionForm onSubmit={handleQuestionSubmit} loading={loading} />
+            
+            {loading && (
+              <div className="loading-message">
+                {loadingMessage}
+              </div>
+            )}
+            
+            {error && (
+              <div className="error-message">
+                Error: {error}
+              </div>
+            )}
+            
+            {(answers.length > 0 || relatedQuestions || youtubeSearchResults || searchStatus === 'no_results') && (
+              <AnswerList 
+                answers={answers} 
+                relatedQuestion={relatedQuestion}
+                relatedQuestions={relatedQuestions}
+                youtubeSearchResults={youtubeSearchResults}
+                searchStatus={searchStatus}
+                onRelatedQuestionClick={handleQuestionSubmit}
+              />
+            )}
+          </>
         )}
-        
-        {error && (
-          <div className="error-message">
-            Error: {error}
-          </div>
-        )}
-        
-        {(answers.length > 0 || relatedQuestions || youtubeSearchResults || searchStatus === 'no_results') && (
-          <AnswerList 
-            answers={answers} 
-            relatedQuestion={relatedQuestion}
-            relatedQuestions={relatedQuestions}
-            youtubeSearchResults={youtubeSearchResults}
-            searchStatus={searchStatus}
-            onRelatedQuestionClick={handleQuestionSubmit}
-          />
+
+        {activeTab === 'explore' && (
+          <TagsExplorer />
         )}
       </main>
     </div>
