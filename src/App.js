@@ -33,7 +33,9 @@ function App() {
       
       // Step 1: Try Q&A matching
       // Default to Azure backend, override with .env file for local development
-      const apiUrl = process.env.REACT_APP_API_URL || 'https://expertanswersapi-ege8htfcg5a0bgbk.westus2-01.azurewebsites.net';
+      const apiUrl = process.env.REACT_APP_API_URL 
+        ? process.env.REACT_APP_API_URL 
+        : 'https://expertanswersapi-ege8htfcg5a0bgbk.westus2-01.azurewebsites.net';
       const response = await fetch(
         `${apiUrl}/api/answers/v1?question=${encodeURIComponent(questionText)}&count=5`
       );
