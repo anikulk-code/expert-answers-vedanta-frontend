@@ -25,7 +25,6 @@ function App() {
     setLoadingMessage('Searching Q&A database...');
     
     try {
-      const apiUrl = process.env.REACT_APP_API_URL || 'http://localhost:8000';
       const questionText = question.trim();
       
       if (!questionText) {
@@ -33,8 +32,9 @@ function App() {
       }
       
       // Step 1: Try Q&A matching
+      // Use relative URL - proxy handles routing in both local dev and production
       const response = await fetch(
-        `${apiUrl}/api/answers/v1?question=${encodeURIComponent(questionText)}&count=5`
+        `/api/answers/v1?question=${encodeURIComponent(questionText)}&count=5`
       );
       
       if (!response.ok) {

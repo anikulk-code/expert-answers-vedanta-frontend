@@ -1,0 +1,9 @@
+{
+  "routes": [
+    {
+      "route": "/api/*",
+      "rewrite": "https://expertanswersapi-ege8htfcg5a0bgbk.westus2-01.azurewebsites.net/api/*"
+    }
+  ]
+}
+
