@@ -13,6 +13,7 @@ function TagsExplorer() {
   useEffect(() => {
     // Load tags on component mount
     loadTags();
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
   const loadTags = async () => {
