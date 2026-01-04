@@ -76,17 +76,15 @@ function AnswerList({ answers, relatedQuestion, relatedQuestions, youtubeSearchR
                   <h3 className="question-title">{answer.questionTitle}</h3>
                 )}
                 <div className="answer-header">
-                  {answer.playlistId ? (
+                  {answer.videoLink && (
                     <a 
-                      href={`https://www.youtube.com/playlist?list=${answer.playlistId}`}
+                      href={answer.videoLink}
                       target="_blank"
                       rel="noopener noreferrer"
-                      className="playlist-link"
+                      className="full-video-link"
                     >
-                      View Playlist
+                      View Full Video
                     </a>
-                  ) : (
-                    <span className="speaker">{answer.speakers}</span>
                   )}
                   {answer.date && answer.date !== '2024-01-01' && (
                     <span className="date">{answer.date}</span>
@@ -116,9 +114,24 @@ function AnswerList({ answers, relatedQuestion, relatedQuestions, youtubeSearchR
     return null;
   }
 
+  // Get playlist ID from first answer (all should be from same playlist)
+  const playlistId = answers.length > 0 ? answers[0].playlistId : null;
+
   return (
     <div className="answer-list">
-      <h2>Answers ({answers.length})</h2>
+      <div className="answer-list-header">
+        <h2>Answers ({answers.length})</h2>
+        {playlistId && (
+          <a 
+            href={`https://www.youtube.com/playlist?list=${playlistId}`}
+            target="_blank"
+            rel="noopener noreferrer"
+            className="playlist-link-header"
+          >
+            View Full Playlist
+          </a>
+        )}
+      </div>
       {answers.map((answer, index) => (
         <div key={index} className="answer-card">
           <div className="answer-content">
@@ -148,17 +161,15 @@ function AnswerList({ answers, relatedQuestion, relatedQuestions, youtubeSearchR
                 <h3 className="question-title">{answer.questionTitle}</h3>
               )}
               <div className="answer-header">
-                {answer.playlistId ? (
+                {answer.videoLink && (
                   <a 
-                    href={`https://www.youtube.com/playlist?list=${answer.playlistId}`}
+                    href={answer.videoLink}
                     target="_blank"
                     rel="noopener noreferrer"
-                    className="playlist-link"
+                    className="full-video-link"
                   >
-                    View Playlist
+                    View Full Video
                   </a>
-                ) : (
-                  <span className="speaker">{answer.speakers}</span>
                 )}
                 {answer.date && answer.date !== '2024-01-01' && (
                   <span className="date">{answer.date}</span>

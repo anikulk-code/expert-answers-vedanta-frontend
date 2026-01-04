@@ -87,8 +87,8 @@ function App() {
   return (
     <div className="App">
       <header className="App-header">
-        <h1>Expert Answers - Vedanta</h1>
-        <p>Get answers from YouTube videos by Sarvapriyananda</p>
+        <h1>Vedanta Answers</h1>
+        <p>Get answers from YouTube videos by Swami Sarvapriyananda</p>
         <div className="trust-badge">
           <span className="trust-badge-text">Source: Official YouTube talks</span>
         </div>

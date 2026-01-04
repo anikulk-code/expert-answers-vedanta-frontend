@@ -2,9 +2,32 @@
   margin-top: 2rem;
 }
 
-.answer-list h2 {
+.answer-list-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
   margin-bottom: 1.5rem;
+}
+
+.answer-list h2 {
+  margin: 0;
   color: #333;
+}
+
+.playlist-link-header {
+  font-weight: 500;
+  color: #4a90e2;
+  font-size: 0.95rem;
+  text-decoration: none;
+  padding: 0.5rem 1rem;
+  border: 1px solid #4a90e2;
+  border-radius: 6px;
+  transition: all 0.2s;
+}
+
+.playlist-link-header:hover {
+  background-color: #4a90e2;
+  color: white;
 }
 
 .answer-card {
@@ -117,10 +140,24 @@
   border-bottom: 1px solid #eee;
 }
 
+
 .speaker {
   font-weight: 600;
   color: #4a90e2;
   font-size: 1.1rem;
+}
+
+.full-video-link {
+  font-weight: 400;
+  color: #888;
+  font-size: 0.9rem;
+  text-decoration: none;
+  transition: color 0.2s;
+}
+
+.full-video-link:hover {
+  color: #4a90e2;
+  text-decoration: underline;
 }
 
 .playlist-link {
