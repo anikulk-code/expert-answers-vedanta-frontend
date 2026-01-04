@@ -59,3 +59,35 @@
   cursor: not-allowed;
 }
 
+.placeholder-questions {
+  margin-bottom: 0.75rem;
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.5rem;
+  align-items: center;
+}
+
+.placeholder-question {
+  background-color: #f8f9fa;
+  color: #495057;
+  border: 1px solid #e9ecef;
+  padding: 0.35rem 0.75rem;
+  font-size: 0.8rem;
+  border-radius: 16px;
+  cursor: pointer;
+  transition: all 0.2s;
+  font-family: inherit;
+  font-weight: 400;
+}
+
+.placeholder-question:hover:not(:disabled) {
+  background-color: #e9ecef;
+  border-color: #4a90e2;
+  color: #4a90e2;
+}
+
+.placeholder-question:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+
