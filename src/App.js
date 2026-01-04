@@ -4,6 +4,8 @@ import QuestionForm from './components/QuestionForm';
 import AnswerList from './components/AnswerList';
 import TagsExplorer from './components/TagsExplorer';
 
+// Dummy change to trigger rebuild
+
 function App() {
   const [activeTab, setActiveTab] = useState('search'); // 'search' or 'explore'
   const [answers, setAnswers] = useState([]);
