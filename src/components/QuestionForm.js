@@ -8,7 +8,7 @@ function QuestionForm({ onSubmit, loading }) {
     "Why should I care about spirituality?",
     "What is the nature of consciousness?",
     "How does Vedanta view suffering?",
-    "In Vedanta, are we ignoring the problems of society for the sake of spirituality?"
+    "Does Vedanta promote indifference to social problems?"
   ];
 
   const handleSubmit = (e) => {
