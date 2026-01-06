@@ -42,12 +42,13 @@
   background-color: #4a90e2;
   color: white;
   border: none;
-  padding: 0.75rem 2rem;
-  font-size: 1rem;
+  padding: 1rem 3rem;
+  font-size: 1.1rem;
   border-radius: 4px;
   cursor: pointer;
   font-weight: 600;
   transition: background-color 0.2s;
+  min-width: 200px;
 }
 
 .question-form button:hover:not(:disabled) {
