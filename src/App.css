@@ -35,6 +35,13 @@
   color: white;
   opacity: 0.95;
   font-weight: 500;
+  transition: opacity 0.2s;
+  cursor: pointer;
+}
+
+.trust-badge-text:hover {
+  opacity: 1;
+  text-decoration: underline;
 }
 
 .App-main {

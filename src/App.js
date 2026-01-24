@@ -136,7 +136,15 @@ function App() {
         <h1>Vedanta Answers</h1>
         <p>Get answers from YouTube videos by Swami Sarvapriyananda</p>
         <div className="trust-badge">
-          <span className="trust-badge-text">Source: Official YouTube talks</span>
+          <a 
+            href="https://www.youtube.com/playlist?list=PLDqahtm2vA70VohJ__IobJSOGFJ2SdaRO"
+            target="_blank"
+            rel="noopener noreferrer"
+            className="trust-badge-text"
+            style={{ textDecoration: 'none', color: 'inherit' }}
+          >
+            Source: AskSwami Q&A | Swami Sarvapriyananda
+          </a>
         </div>
       </header>
       
