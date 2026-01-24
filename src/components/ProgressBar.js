@@ -1,23 +1,21 @@
 import React, { useState, useEffect } from 'react';
 import './ProgressBar.css';
 
+const stages = [
+  { key: 'searching_questions', message: 'Searching Q&A database by topics...', duration: 3000, progress: 20 },
+  { key: 'filtering_relevance', message: 'Filtering results for relevance...', duration: 5000, progress: 50 },
+  { key: 'searching_videos', message: 'Searching YouTube videos...', duration: 4000, progress: 70 },
+  { key: 'checking_relevance', message: 'Checking video relevance...', duration: 3000, progress: 85 },
+  { key: 'gathering_options', message: 'Gathering similar questions and options...', duration: 2000, progress: 95 },
+];
+
 function ProgressBar({ loading, message, prominent = false }) {
   const [progress, setProgress] = useState(0);
-  const [currentStage, setCurrentStage] = useState('searching_questions');
   const [stageMessage, setStageMessage] = useState('Searching Q&A database...');
-
-  const stages = [
-    { key: 'searching_questions', message: 'Searching Q&A database by topics...', duration: 3000, progress: 20 },
-    { key: 'filtering_relevance', message: 'Filtering results for relevance...', duration: 5000, progress: 50 },
-    { key: 'searching_videos', message: 'Searching YouTube videos...', duration: 4000, progress: 70 },
-    { key: 'checking_relevance', message: 'Checking video relevance...', duration: 3000, progress: 85 },
-    { key: 'gathering_options', message: 'Gathering similar questions and options...', duration: 2000, progress: 95 },
-  ];
 
   useEffect(() => {
     if (!loading) {
       setProgress(0);
-      setCurrentStage('searching_questions');
       setStageMessage('Searching Q&A database...');
       return;
     }
@@ -42,7 +40,6 @@ function ProgressBar({ loading, message, prominent = false }) {
       const currentProgress = accumulatedProgress + (stageProgress * stageContribution);
       
       setProgress(Math.min(currentProgress, 95)); // Cap at 95% until we get response
-      setCurrentStage(currentStageData.key);
       setStageMessage(currentStageData.message || message || 'Searching...');
 
       // Move to next stage if current stage duration has passed
@@ -63,6 +60,8 @@ function ProgressBar({ loading, message, prominent = false }) {
         clearTimeout(timeoutId);
       }
     };
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+    // stages is a module-level constant, doesn't need to be in dependencies
   }, [loading, message]);
 
   // Reset to 100% when loading completes
