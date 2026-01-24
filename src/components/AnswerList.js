@@ -1,5 +1,6 @@
 import React from 'react';
 import './AnswerList.css';
+import QueueSection from './QueueSection';
 
 // Convert timestamp (HH:MM:SS or MM:SS) to seconds
 function timeToSeconds(timeStr) {
@@ -15,7 +16,7 @@ function timeToSeconds(timeStr) {
   return 0;
 }
 
-function AnswerList({ answers, relatedQuestion, relatedQuestions, youtubeSearchResults, searchStatus, onRelatedQuestionClick }) {
+function AnswerList({ answers, relatedQuestion, relatedQuestions, youtubeSearchResults, searchStatus, queueInfo, userMessage, currentQuestion, onRelatedQuestionClick, apiUrl }) {
   // Handle related questions fallback
   if (searchStatus === 'related_questions' && relatedQuestions && relatedQuestions.length > 0) {
     return (
@@ -43,9 +44,11 @@ function AnswerList({ answers, relatedQuestion, relatedQuestions, youtubeSearchR
   if (searchStatus === 'youtube_search' && youtubeSearchResults && youtubeSearchResults.length > 0) {
     return (
       <div className="answer-list">
-        <div className="search-context">
-          <p>No Q&A match found. Here are related videos:</p>
-        </div>
+        {userMessage && (
+          <div className="search-context">
+            <p>{userMessage}</p>
+          </div>
+        )}
         <h2>Related Videos ({youtubeSearchResults.length})</h2>
         {youtubeSearchResults.map((answer, index) => (
           <div key={index} className="answer-card youtube-search-result">
@@ -94,6 +97,14 @@ function AnswerList({ answers, relatedQuestion, relatedQuestions, youtubeSearchR
             </div>
           </div>
         ))}
+        {queueInfo && (
+          <QueueSection 
+            queueInfo={queueInfo}
+            userQuestion={currentQuestion}
+            apiUrl={apiUrl}
+            prominence="prominent"
+          />
+        )}
       </div>
     );
   }
@@ -102,9 +113,24 @@ function AnswerList({ answers, relatedQuestion, relatedQuestions, youtubeSearchR
   if (searchStatus === 'no_results') {
     return (
       <div className="answer-list">
-        <div className="no-answers-message">
-          <p>No results found. Try rephrasing your question or browse the playlist.</p>
-        </div>
+        {userMessage && (
+          <div className="no-answers-message">
+            <p>{userMessage}</p>
+          </div>
+        )}
+        {!userMessage && (
+          <div className="no-answers-message">
+            <p>No results found. Try rephrasing your question or browse the playlist.</p>
+          </div>
+        )}
+        {queueInfo && (
+          <QueueSection 
+            queueInfo={queueInfo}
+            userQuestion={currentQuestion}
+            apiUrl={apiUrl}
+            prominence="very-prominent"
+          />
+        )}
       </div>
     );
   }
@@ -193,6 +219,16 @@ function AnswerList({ answers, relatedQuestion, relatedQuestions, youtubeSearchR
             {relatedQuestion}
           </button>
         </div>
+      )}
+      
+      {/* Show queue option for Q&A results - subtle if 3+ answers, more prominent if fewer */}
+      {queueInfo && (
+        <QueueSection 
+          queueInfo={queueInfo}
+          userQuestion={currentQuestion}
+          apiUrl={apiUrl}
+          prominence={answers.length >= 3 ? 'subtle' : 'prominent'}
+        />
       )}
     </div>
   );

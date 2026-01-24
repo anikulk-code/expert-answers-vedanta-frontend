@@ -1,0 +1,100 @@
+.progress-bar-container {
+  margin: 20px auto;
+  max-width: 600px;
+  padding: 20px;
+  background: #f9f9f9;
+  border-radius: 8px;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+}
+
+.progress-bar-message {
+  font-size: 16px;
+  font-weight: 500;
+  color: #333;
+  margin-bottom: 12px;
+  text-align: center;
+}
+
+.progress-bar-wrapper {
+  width: 100%;
+  height: 24px;
+  background: #e0e0e0;
+  border-radius: 12px;
+  overflow: hidden;
+  position: relative;
+  margin-bottom: 8px;
+}
+
+.progress-bar-fill {
+  height: 100%;
+  background: linear-gradient(90deg, #4CAF50 0%, #45a049 100%);
+  border-radius: 12px;
+  transition: width 0.3s ease;
+  animation: pulse 2s ease-in-out infinite;
+}
+
+@keyframes pulse {
+  0%, 100% {
+    opacity: 1;
+  }
+  50% {
+    opacity: 0.8;
+  }
+}
+
+.progress-bar-percentage {
+  text-align: center;
+  font-size: 14px;
+  color: #666;
+  font-weight: 500;
+}
+
+/* Prominent mode for YouTube search transition */
+.progress-bar-container.prominent {
+  background: #fff3cd;
+  border: 2px solid #ffc107;
+  box-shadow: 0 4px 12px rgba(255, 193, 7, 0.3);
+  animation: pulse-border 2s ease-in-out infinite;
+}
+
+.progress-bar-container.prominent .progress-bar-message {
+  color: #856404;
+  font-weight: 600;
+  font-size: 18px;
+}
+
+.progress-bar-container.prominent .progress-bar-wrapper {
+  height: 32px;
+  border: 2px solid #ffc107;
+}
+
+.progress-bar-fill.prominent {
+  background: linear-gradient(90deg, #ffc107 0%, #ff9800 100%);
+  animation: pulse-prominent 1.5s ease-in-out infinite;
+}
+
+.progress-bar-container.prominent .progress-bar-percentage {
+  color: #856404;
+  font-weight: 600;
+  font-size: 16px;
+}
+
+@keyframes pulse-border {
+  0%, 100% {
+    box-shadow: 0 4px 12px rgba(255, 193, 7, 0.3);
+  }
+  50% {
+    box-shadow: 0 6px 20px rgba(255, 193, 7, 0.5);
+  }
+}
+
+@keyframes pulse-prominent {
+  0%, 100% {
+    opacity: 1;
+    transform: scaleY(1);
+  }
+  50% {
+    opacity: 0.9;
+    transform: scaleY(1.05);
+  }
+}

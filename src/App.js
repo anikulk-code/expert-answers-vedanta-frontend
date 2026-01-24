@@ -1,18 +1,35 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import './App.css';
 import QuestionForm from './components/QuestionForm';
 import AnswerList from './components/AnswerList';
 import TagsExplorer from './components/TagsExplorer';
+import SearchDebug from './components/SearchDebug';
+import ProgressBar from './components/ProgressBar';
 
 // Dummy change to trigger rebuild
 
 function App() {
-  const [activeTab, setActiveTab] = useState('search'); // 'search' or 'explore'
+  // Check if debug view should be shown
+  // Controlled by REACT_APP_ENABLE_DEBUG environment variable
+  // Set to 'true' to show, 'false' or unset to hide
+  const showDebug = process.env.REACT_APP_ENABLE_DEBUG === 'true';
+  
+  const [activeTab, setActiveTab] = useState('search'); // 'search', 'explore', or 'debug'
+  
+  // Reset to 'search' tab if debug is selected but debug is disabled
+  useEffect(() => {
+    if (activeTab === 'debug' && !showDebug) {
+      setActiveTab('search');
+    }
+  }, [activeTab, showDebug]);
   const [answers, setAnswers] = useState([]);
   const [relatedQuestion, setRelatedQuestion] = useState(null);
   const [relatedQuestions, setRelatedQuestions] = useState(null);
   const [youtubeSearchResults, setYoutubeSearchResults] = useState(null);
   const [searchStatus, setSearchStatus] = useState(null);
+  const [queueInfo, setQueueInfo] = useState(null);
+  const [userMessage, setUserMessage] = useState(null);
+  const [currentQuestion, setCurrentQuestion] = useState(null);
   const [loading, setLoading] = useState(false);
   const [loadingMessage, setLoadingMessage] = useState('Searching...');
   const [error, setError] = useState(null);
@@ -24,6 +41,9 @@ function App() {
     setRelatedQuestions(null);
     setYoutubeSearchResults(null);
     setSearchStatus(null);
+    setQueueInfo(null);
+    setUserMessage(null);
+    setCurrentQuestion(question);
     setLoadingMessage('Searching Q&A database...');
     
     try {
@@ -38,15 +58,52 @@ function App() {
       const apiUrl = process.env.REACT_APP_API_URL 
         ? process.env.REACT_APP_API_URL 
         : 'https://expertanswersapi-ege8htfcg5a0bgbk.westus2-01.azurewebsites.net';
-      const response = await fetch(
-        `${apiUrl}/api/answers/v1?question=${encodeURIComponent(questionText)}&count=5`
-      );
+      
+      // Create an AbortController for timeout
+      const controller = new AbortController();
+      const timeoutId = setTimeout(() => controller.abort(), 90000); // 90 second timeout (GPT-4o can be slow)
+      
+      console.log('Making API request to:', `${apiUrl}/api/answers/v1?question=${encodeURIComponent(questionText)}&count=5`);
+      
+      let response;
+      try {
+        response = await fetch(
+          `${apiUrl}/api/answers/v1?question=${encodeURIComponent(questionText)}&count=5`,
+          { 
+            signal: controller.signal,
+            headers: {
+              'Accept': 'application/json',
+            }
+          }
+        );
+        clearTimeout(timeoutId);
+        console.log('API response status:', response.status);
+      } catch (error) {
+        clearTimeout(timeoutId);
+        console.error('Fetch error:', error);
+        if (error.name === 'AbortError') {
+          throw new Error('Request timed out after 90 seconds. The search is taking longer than expected. Please try again or check your connection.');
+        }
+        throw new Error(`Network error: ${error.message}. Please check your internet connection and try again.`);
+      }
       
       if (!response.ok) {
-        throw new Error('Failed to fetch answers');
+        const errorText = await response.text();
+        let errorMessage = 'Failed to fetch answers';
+        try {
+          const errorData = JSON.parse(errorText);
+          errorMessage = errorData.detail || errorMessage;
+        } catch (e) {
+          errorMessage = errorText || errorMessage;
+        }
+        throw new Error(errorMessage);
       }
       
       const data = await response.json();
+      
+      // Capture queueInfo and userMessage from API response
+      setQueueInfo(data.queueInfo || null);
+      setUserMessage(data.userMessage || null);
       
       // If we have answers, we're done
       if (data.answers && data.answers.length > 0) {
@@ -57,37 +114,19 @@ function App() {
         return;
       }
       
-      // Step 2: No Q&A matches - try related questions
-      setLoadingMessage('Searching for related questions...');
-      
-      // The backend already handles this, but we can show the progress
-      // Check if backend returned related questions
-      if (data.relatedQuestions && data.relatedQuestions.length > 0) {
-        setRelatedQuestions(data.relatedQuestions);
-        setSearchStatus('related_questions');
-        setLoading(false);
-        return;
-      }
-      
-      // Step 3: Related questions also failed - try YouTube search
-      setLoadingMessage('Searching related talks...');
-      
-      // Backend should have done YouTube search, check results
-      if (data.youtubeSearchResults && data.youtubeSearchResults.length > 0) {
-        setYoutubeSearchResults(data.youtubeSearchResults);
-        setSearchStatus('youtube_search');
-        setLoading(false);
-        return;
-      }
-      
-      // Step 4: No results found
+      // Step 2: No Q&A matches - show related questions and upvoting
+      // Backend returns queueInfo with similar questions for upvoting
       setSearchStatus('no_results');
       setLoading(false);
       
     } catch (err) {
-      setError(err.message);
+      setError(err.message || 'An unexpected error occurred. Please try again.');
       console.error('Error fetching answers:', err);
       setLoading(false);
+      setLoadingMessage('');
+      setAnswers([]);
+      setSearchStatus(null);
+      setQueueInfo(null);
     }
   };
 
@@ -115,17 +154,21 @@ function App() {
           >
             Explore by Topic
           </button>
+          {showDebug && (
+            <button
+              className={`tab-button ${activeTab === 'debug' ? 'active' : ''}`}
+              onClick={() => setActiveTab('debug')}
+            >
+              Debug Search
+            </button>
+          )}
         </div>
 
         {activeTab === 'search' && (
           <>
             <QuestionForm onSubmit={handleQuestionSubmit} loading={loading} />
             
-            {loading && (
-              <div className="loading-message">
-                {loadingMessage}
-              </div>
-            )}
+            <ProgressBar loading={loading} message={loadingMessage} />
             
             {error && (
               <div className="error-message">
@@ -133,22 +176,32 @@ function App() {
               </div>
             )}
             
-            {(answers.length > 0 || relatedQuestions || youtubeSearchResults || searchStatus === 'no_results') && (
+            {(answers.length > 0 || relatedQuestions || youtubeSearchResults || searchStatus === 'no_results' || queueInfo) && (
               <AnswerList 
                 answers={answers} 
                 relatedQuestion={relatedQuestion}
                 relatedQuestions={relatedQuestions}
                 youtubeSearchResults={youtubeSearchResults}
                 searchStatus={searchStatus}
+                queueInfo={queueInfo}
+                userMessage={userMessage}
+                currentQuestion={currentQuestion}
                 onRelatedQuestionClick={handleQuestionSubmit}
+                apiUrl={process.env.REACT_APP_API_URL || 'https://expertanswersapi-ege8htfcg5a0bgbk.westus2-01.azurewebsites.net'}
               />
             )}
           </>
         )}
 
-        {activeTab === 'explore' && (
-          <TagsExplorer />
-        )}
+              {activeTab === 'explore' && (
+                <TagsExplorer onSearch={handleQuestionSubmit} />
+              )}
+
+              {showDebug && activeTab === 'debug' && (
+                <SearchDebug 
+                  apiUrl={process.env.REACT_APP_API_URL || 'https://expertanswersapi-ege8htfcg5a0bgbk.westus2-01.azurewebsites.net'}
+                />
+              )}
       </main>
     </div>
   );
