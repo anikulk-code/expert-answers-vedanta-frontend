@@ -10,6 +10,7 @@ function TagsExplorer({ onSearch }) {
   const [searchQuery, setSearchQuery] = useState('');
   const [searchResults, setSearchResults] = useState([]);
   const [isSearching, setIsSearching] = useState(false);
+  const [thumbnails, setThumbnails] = useState({}); // Map of videoId -> thumbnail URL
 
   const apiUrl = process.env.REACT_APP_API_URL || 'https://expertanswersapi-ege8htfcg5a0bgbk.westus2-01.azurewebsites.net';
 
@@ -57,6 +58,7 @@ function TagsExplorer({ onSearch }) {
         throw new Error('Failed to load questions');
       }
       const data = await response.json();
+      console.log(`Loaded ${data.length} questions for tag "${tag}":`, data);
       setQuestions(data);
     } catch (err) {
       setError(err.message);
@@ -75,6 +77,109 @@ function TagsExplorer({ onSearch }) {
     }
     return 0;
   };
+
+  // Extract video ID from YouTube URL
+  const extractVideoId = (videoLink) => {
+    if (!videoLink) return null;
+    const baseUrl = videoLink.split('&t=')[0].split('#')[0]; // Remove timestamp and fragment
+    const match = baseUrl.match(/(?:youtube\.com\/watch\?v=|youtu\.be\/)([^&\s?]+)/);
+    const videoId = match ? match[1] : null;
+    if (videoId) {
+      console.log(`Extracted video ID: ${videoId} from ${videoLink}`);
+    }
+    return videoId;
+  };
+
+  // Track which thumbnails are currently loading to avoid duplicate requests
+  const loadingThumbnails = React.useRef(new Set());
+
+  // Load thumbnail for a single video ID
+  const loadThumbnail = React.useCallback(async (videoId) => {
+    if (!videoId || thumbnails[videoId] || loadingThumbnails.current.has(videoId)) {
+      return; // Already loaded or loading
+    }
+
+    loadingThumbnails.current.add(videoId);
+
+    try {
+      const response = await fetch(`${apiUrl}/api/thumbnails/${videoId}`);
+      if (!response.ok) {
+        console.warn(`Thumbnail API returned ${response.status} for ${videoId}`);
+        return;
+      }
+      const data = await response.json();
+      if (data && data.thumbnail) {
+        setThumbnails(prev => ({ ...prev, [videoId]: data.thumbnail }));
+      }
+    } catch (err) {
+      console.error(`Error loading thumbnail for ${videoId}:`, err);
+    } finally {
+      loadingThumbnails.current.delete(videoId);
+    }
+  }, [apiUrl, thumbnails]);
+
+  // Load thumbnails for all visible items using Intersection Observer
+  useEffect(() => {
+    if (questions.length === 0 && searchResults.length === 0) {
+      return;
+    }
+
+    // Wait for DOM to update, then observe
+    const timeoutId = setTimeout(() => {
+      const observer = new IntersectionObserver(
+        (entries) => {
+          entries.forEach((entry) => {
+            if (entry.isIntersecting) {
+              const videoId = entry.target.dataset.videoId;
+              if (videoId) {
+                loadThumbnail(videoId);
+                // Once we start loading, unobserve to avoid duplicate requests
+                observer.unobserve(entry.target);
+              }
+            }
+          });
+        },
+        {
+          root: null,
+          rootMargin: '100px', // Start loading 100px before item becomes visible
+          threshold: 0.1
+        }
+      );
+
+      // Observe all question items that don't have thumbnails yet
+      const questionItems = document.querySelectorAll('.question-item[data-video-id]');
+      questionItems.forEach((item) => {
+        const videoId = item.dataset.videoId;
+        if (videoId && !thumbnails[videoId] && !loadingThumbnails.current.has(videoId)) {
+          observer.observe(item);
+        }
+      });
+
+      return () => {
+        questionItems.forEach((item) => observer.unobserve(item));
+      };
+    }, 100); // Small delay to ensure DOM is updated
+
+    return () => {
+      clearTimeout(timeoutId);
+    };
+  }, [questions, searchResults, loadThumbnail, thumbnails]);
+
+  // Clear thumbnails when switching from search to tag view
+  useEffect(() => {
+    if (questions.length > 0 && searchResults.length === 0) {
+      setThumbnails({});
+      loadingThumbnails.current.clear();
+    }
+  }, [questions.length, searchResults.length]);
+
+  // Clear thumbnails when switching from tag to search view
+  useEffect(() => {
+    if (searchResults.length > 0 && questions.length === 0) {
+      setThumbnails({});
+      loadingThumbnails.current.clear();
+    }
+  }, [questions.length, searchResults.length]);
 
   const handleSearchSubmit = async (e) => {
     e.preventDefault();
@@ -251,27 +356,59 @@ function TagsExplorer({ onSearch }) {
           )}
 
           <div className="questions-list">
-            {searchResults.map((q, index) => (
-              <div key={index} className="question-item">
-                <a
-                  href={q.url + (q.timestamp && q.timestamp !== '00:00:00' ? `&t=${timeToSeconds(q.timestamp)}s` : '')}
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  className="question-link"
+            {searchResults.map((q, index) => {
+              const videoLink = q.videoLink || '#';
+              const timeStr = q.time && q.time !== '00:00:00' ? `&t=${timeToSeconds(q.time)}s` : '';
+              const fullLink = videoLink !== '#' ? videoLink + timeStr : '#';
+              const questionTitle = q.questionTitle || q.question || 'Untitled Question';
+              const videoId = extractVideoId(q.videoLink);
+              const thumbnail = videoId ? thumbnails[videoId] : null;
+              
+              return (
+                <div 
+                  key={index} 
+                  className="question-item"
+                  data-video-id={videoId || ''}
                 >
-                  {q.question}
-                </a>
-                <div className="question-meta">
-                  <span className="video-title">{q.video_title}</span>
-                  {q.timestamp && q.timestamp !== '00:00:00' && (
-                    <span className="timestamp">{q.timestamp}</span>
+                  {thumbnail && (
+                    <div className="thumbnail-container">
+                      <a 
+                        href={fullLink}
+                        target="_blank"
+                        rel="noopener noreferrer"
+                        className="thumbnail-link"
+                      >
+                        <img 
+                          src={thumbnail} 
+                          alt="Video thumbnail" 
+                          className="thumbnail"
+                        />
+                        <div className="play-icon-overlay">
+                          <svg width="64" height="64" viewBox="0 0 24 24" fill="white" xmlns="http://www.w3.org/2000/svg">
+                            <path d="M8 5v14l11-7z"/>
+                          </svg>
+                        </div>
+                      </a>
+                    </div>
                   )}
-                  {q.primary_tag && (
-                    <span className="question-tag">{q.primary_tag}</span>
-                  )}
+                  <div className="question-content">
+                    <a
+                      href={fullLink}
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      className="question-link"
+                    >
+                      {questionTitle}
+                    </a>
+                    <div className="question-meta">
+                      {q.time && q.time !== '00:00:00' && (
+                        <span className="timestamp">{q.time}</span>
+                      )}
+                    </div>
+                  </div>
                 </div>
-              </div>
-            ))}
+              );
+            })}
           </div>
         </div>
       )}
@@ -297,24 +434,59 @@ function TagsExplorer({ onSearch }) {
 
           {questions.length > 0 ? (
             <div className="questions-list">
-              {questions.map((q, index) => (
-                <div key={index} className="question-item">
-                  <a
-                    href={q.url + (q.timestamp && q.timestamp !== '00:00:00' ? `&t=${timeToSeconds(q.timestamp)}s` : '')}
-                    target="_blank"
-                    rel="noopener noreferrer"
-                    className="question-link"
+              {questions.map((q, index) => {
+                const videoLink = q.videoLink || '#';
+                const timeStr = q.time && q.time !== '00:00:00' ? `&t=${timeToSeconds(q.time)}s` : '';
+                const fullLink = videoLink !== '#' ? videoLink + timeStr : '#';
+                const questionTitle = q.questionTitle || 'Untitled Question';
+                const videoId = extractVideoId(q.videoLink);
+                const thumbnail = videoId ? thumbnails[videoId] : null;
+                
+                return (
+                  <div 
+                    key={index} 
+                    className="question-item"
+                    data-video-id={videoId || ''}
                   >
-                    {q.question}
-                  </a>
-                  <div className="question-meta">
-                    <span className="video-title">{q.video_title}</span>
-                    {q.timestamp && q.timestamp !== '00:00:00' && (
-                      <span className="timestamp">{q.timestamp}</span>
+                    {thumbnail && (
+                      <div className="thumbnail-container">
+                        <a 
+                          href={fullLink}
+                          target="_blank"
+                          rel="noopener noreferrer"
+                          className="thumbnail-link"
+                        >
+                          <img 
+                            src={thumbnail} 
+                            alt="Video thumbnail" 
+                            className="thumbnail"
+                          />
+                          <div className="play-icon-overlay">
+                            <svg width="64" height="64" viewBox="0 0 24 24" fill="white" xmlns="http://www.w3.org/2000/svg">
+                              <path d="M8 5v14l11-7z"/>
+                            </svg>
+                          </div>
+                        </a>
+                      </div>
                     )}
+                    <div className="question-content">
+                      <a
+                        href={fullLink}
+                        target="_blank"
+                        rel="noopener noreferrer"
+                        className="question-link"
+                      >
+                        {questionTitle}
+                      </a>
+                      <div className="question-meta">
+                        {q.time && q.time !== '00:00:00' && (
+                          <span className="timestamp">{q.time}</span>
+                        )}
+                      </div>
+                    </div>
                   </div>
-                </div>
-              ))}
+                );
+              })}
             </div>
           ) : !loading && (
             <div className="no-questions">No questions found for this topic.</div>
