@@ -6,7 +6,7 @@ import TagsExplorer from './components/TagsExplorer';
 import SearchDebug from './components/SearchDebug';
 import ProgressBar from './components/ProgressBar';
 
-// Dummy change to trigger rebuild
+// Dummy change to trigger rebuild - v2
 
 function App() {
   // Check if debug view should be shown
