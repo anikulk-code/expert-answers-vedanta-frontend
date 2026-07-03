@@ -2,19 +2,62 @@ import React from 'react';
 import { Link, Navigate, useParams } from 'react-router-dom';
 import {
   getChapterName,
+  getChapterOtherLectures,
   getChapterVerseCount,
   isVerseMapped,
   useGitaData,
 } from '../../context/GitaDataContext';
+import { useGitaTeacherFilter } from '../../hooks/useGitaTeacherFilter';
 import './Gita.css';
+
+function GitaChapterOtherLectures({ chapter, lectures }) {
+  const { showAllTeachers } = useGitaTeacherFilter();
+
+  if (!showAllTeachers || !lectures?.length) return null;
+
+  return (
+    <section className="gita-lecture-block gita-chapter-other-block">
+      <h3 className="gita-section-label">Chapter-level lectures</h3>
+      <p className="gita-lecture-note">
+        Talks covering Chapter {chapter} as a whole from other teachers in the
+        Ramakrishna Order.
+      </p>
+      <div className="gita-lecture-list">
+        {lectures.map((lecture) => (
+          <article
+            key={`${lecture.videoId}-${lecture.swami}`}
+            className="gita-lecture-card gita-lecture-card-compact"
+          >
+            <p className="gita-lecture-speaker">
+              {lecture.swami}
+              {lecture.language ? ` · ${lecture.language}` : ''}
+            </p>
+            <p className="gita-lecture-title">{lecture.title}</p>
+            {lecture.url && (
+              <a
+                className="gita-source-link"
+                href={lecture.url}
+                target="_blank"
+                rel="noopener noreferrer"
+              >
+                Open on YouTube
+              </a>
+            )}
+          </article>
+        ))}
+      </div>
+    </section>
+  );
+}
 
 function GitaChapter() {
   const { chapter: chapterParam } = useParams();
   const chapter = parseInt(chapterParam, 10);
   const { data, loading, error } = useGitaData();
+  const { withTeacherQuery } = useGitaTeacherFilter();
 
   if (Number.isNaN(chapter) || chapter < 1 || chapter > 18) {
-    return <Navigate to="/gita" replace />;
+    return <Navigate to={withTeacherQuery('/gita')} replace />;
   }
 
   if (loading) {
@@ -27,12 +70,13 @@ function GitaChapter() {
 
   const verseCount = getChapterVerseCount(data, chapter);
   const chapterName = getChapterName(data, chapter);
+  const chapterOtherLectures = getChapterOtherLectures(data, chapter);
   const verses = Array.from({ length: verseCount }, (_, index) => index + 1);
 
   return (
     <div className="gita-page">
       <nav className="gita-breadcrumb">
-        <Link to="/gita">Gita</Link>
+        <Link to={withTeacherQuery('/gita')}>Gita</Link>
         <span aria-hidden="true"> / </span>
         <span>Chapter {chapter}</span>
       </nav>
@@ -51,7 +95,7 @@ function GitaChapter() {
             return (
               <Link
                 key={verse}
-                to={`/gita/${chapter}/${verse}`}
+                to={withTeacherQuery(`/gita/${chapter}/${verse}`)}
                 className="gita-verse-tile gita-verse-tile-mapped"
               >
                 {verse}
@@ -70,6 +114,11 @@ function GitaChapter() {
           );
         })}
       </div>
+
+      <GitaChapterOtherLectures
+        chapter={chapter}
+        lectures={chapterOtherLectures}
+      />
     </div>
   );
 }

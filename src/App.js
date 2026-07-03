@@ -7,6 +7,7 @@ import TagsExplorer from './components/TagsExplorer';
 import SearchDebug from './components/SearchDebug';
 import ProgressBar from './components/ProgressBar';
 import GitaRoutes from './components/gita/GitaRoutes';
+import GospelRoutes from './components/gospel/GospelRoutes';
 
 function App() {
   const showDebug = process.env.REACT_APP_ENABLE_DEBUG === 'true';
@@ -25,13 +26,15 @@ function App() {
   const [loadingMessage, setLoadingMessage] = useState('Searching...');
   const [error, setError] = useState(null);
 
-  const activeTab = location.pathname.startsWith('/gita')
-    ? 'gita'
-    : location.pathname.startsWith('/explore')
-      ? 'explore'
-      : location.pathname.startsWith('/debug')
-        ? 'debug'
-        : 'search';
+  const activeTab = location.pathname.startsWith('/gospel')
+    ? 'gospel'
+    : location.pathname.startsWith('/gita')
+      ? 'gita'
+      : location.pathname.startsWith('/explore')
+        ? 'explore'
+        : location.pathname.startsWith('/debug')
+          ? 'debug'
+          : 'search';
 
   useEffect(() => {
     if (activeTab === 'debug' && !showDebug) {
@@ -191,6 +194,12 @@ function App() {
           >
             Gita
           </Link>
+          <Link
+            to="/gospel"
+            className={`tab-button ${activeTab === 'gospel' ? 'active' : ''}`}
+          >
+            Gospel
+          </Link>
           {showDebug && (
             <Link
               to="/debug"
@@ -203,6 +212,7 @@ function App() {
 
         <Routes>
           <Route path="/gita/*" element={<GitaRoutes />} />
+          <Route path="/gospel/*" element={<GospelRoutes />} />
           <Route path="/explore" element={<TagsExplorer onSearch={handleQuestionSubmit} />} />
           <Route
             path="/debug"

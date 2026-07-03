@@ -1,6 +1,7 @@
 import React from 'react';
 import { Link } from 'react-router-dom';
 import { getChapterName, getChapterVerseCount, useGitaData } from '../../context/GitaDataContext';
+import { useGitaTeacherFilter } from '../../hooks/useGitaTeacherFilter';
 import GitaSearch from './GitaSearch';
 import './Gita.css';
 
@@ -8,6 +9,7 @@ const CHAPTERS = Array.from({ length: 18 }, (_, index) => index + 1);
 
 function GitaLanding() {
   const { data, loading, error } = useGitaData();
+  const { withTeacherQuery } = useGitaTeacherFilter();
 
   if (loading) {
     return <div className="gita-status">Loading Gita lectures…</div>;
@@ -50,7 +52,7 @@ function GitaLanding() {
           return (
             <Link
               key={chapter}
-              to={`/gita/${chapter}`}
+              to={withTeacherQuery(`/gita/${chapter}`)}
               className="gita-chapter-card"
             >
               <span className="gita-chapter-number">Chapter {chapter}</span>

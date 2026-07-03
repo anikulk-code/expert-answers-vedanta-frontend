@@ -4,13 +4,16 @@ import { BrowserRouter } from 'react-router-dom';
 import './index.css';
 import App from './App';
 import { GitaDataProvider } from './context/GitaDataContext';
+import { GospelDataProvider } from './context/GospelDataContext';
 
 const root = ReactDOM.createRoot(document.getElementById('root'));
 root.render(
   <React.StrictMode>
     <BrowserRouter>
       <GitaDataProvider>
-        <App />
+        <GospelDataProvider>
+          <App />
+        </GospelDataProvider>
       </GitaDataProvider>
     </BrowserRouter>
   </React.StrictMode>

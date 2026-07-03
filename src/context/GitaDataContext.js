@@ -74,3 +74,7 @@ export function getChapterVerseCount(data, chapter) {
 export function getChapterName(data, chapter) {
   return data?.chapterNames?.[chapter] || data?.chapterNames?.[String(chapter)] || '';
 }
+
+export function getChapterOtherLectures(data, chapter) {
+  return data?.chapterOtherLectures?.[String(chapter)] || [];
+}

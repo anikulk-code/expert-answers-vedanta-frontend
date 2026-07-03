@@ -229,6 +229,53 @@
   line-height: 1.5;
 }
 
+.gita-lecture-speaker {
+  margin: 0 0 0.35rem;
+  font-size: 0.85rem;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  color: #8b2635;
+  font-family: Georgia, 'Times New Roman', serif;
+}
+
+.gita-lecture-note {
+  margin: -0.5rem 0 1rem;
+  color: #8a735f;
+  font-size: 0.92rem;
+  line-height: 1.5;
+  font-family: Georgia, 'Times New Roman', serif;
+}
+
+.gita-lecture-list {
+  display: flex;
+  flex-direction: column;
+  gap: 0.85rem;
+}
+
+.gita-lecture-card {
+  padding: 1rem;
+  background: #faf6f0;
+  border: 1px solid #e8ddd0;
+  border-radius: 4px;
+}
+
+.gita-lecture-card-compact .gita-lecture-title {
+  margin-bottom: 0.65rem;
+}
+
+.gita-chapter-other-block {
+  margin-top: 2rem;
+  padding-top: 2rem;
+  border-top: 1px solid #e8ddd0;
+}
+
+.gita-search-result-teachers {
+  display: block;
+  font-size: 0.85rem;
+  color: #8b2635;
+  font-family: Georgia, 'Times New Roman', serif;
+}
+
 .gita-video-wrap {
   position: relative;
   width: 100%;
@@ -396,6 +443,18 @@
   line-height: 1.5;
   color: #4a3728;
   font-family: Georgia, 'Times New Roman', serif;
+}
+
+.gospel-section-list {
+  margin: 0;
+  padding-left: 1.2rem;
+  color: #4a3728;
+  font-family: Georgia, 'Times New Roman', serif;
+  line-height: 1.7;
+}
+
+.gospel-section-list li {
+  margin-bottom: 0.45rem;
 }
 
 @media (max-width: 600px) {

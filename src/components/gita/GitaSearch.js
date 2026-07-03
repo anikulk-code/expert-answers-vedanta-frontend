@@ -1,11 +1,20 @@
 import React, { useMemo, useState } from 'react';
 import { Link } from 'react-router-dom';
 import { useGitaData } from '../../context/GitaDataContext';
+import { useGitaTeacherFilter } from '../../hooks/useGitaTeacherFilter';
 import { searchVerses } from '../../utils/gitaSearch';
 import './Gita.css';
 
+function formatTeacherMatches(teachers) {
+  if (!teachers?.length) return null;
+  const names = teachers.map((name) => name.replace(/^Swami\s+/i, 'Sw. '));
+  if (names.length <= 2) return names.join(', ');
+  return `${names.slice(0, 2).join(', ')} +${names.length - 2}`;
+}
+
 function GitaSearch() {
   const { data } = useGitaData();
+  const { withTeacherQuery } = useGitaTeacherFilter();
   const [query, setQuery] = useState('');
 
   const results = useMemo(
@@ -24,7 +33,7 @@ function GitaSearch() {
         id="gita-keyword-search"
         type="search"
         className="gita-search-input"
-        placeholder="Keyword or verse (e.g. karma, detachment, 2.47)"
+        placeholder="Keyword, verse, or teacher (e.g. karma, 2.47, Tattwamayananda)"
         value={query}
         onChange={(event) => setQuery(event.target.value)}
         autoComplete="off"
@@ -41,7 +50,7 @@ function GitaSearch() {
           {results.map((result) => (
             <li key={result.verseKey}>
               <Link
-                to={`/gita/${result.chapter}/${result.verse}`}
+                to={withTeacherQuery(`/gita/${result.chapter}/${result.verse}`)}
                 className="gita-search-result"
               >
                 <span className="gita-search-result-ref">{result.verseKey}</span>
@@ -49,6 +58,11 @@ function GitaSearch() {
                   Chapter {result.chapter}
                   {result.chapterName ? ` · ${result.chapterName}` : ''}
                 </span>
+                {result.matchingTeachers?.length > 0 && (
+                  <span className="gita-search-result-teachers">
+                    Other teachers: {formatTeacherMatches(result.matchingTeachers)}
+                  </span>
+                )}
                 {result.snippet && (
                   <span className="gita-search-result-snippet">{result.snippet}</span>
                 )}

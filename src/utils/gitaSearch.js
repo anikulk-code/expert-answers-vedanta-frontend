@@ -32,6 +32,20 @@ function parseVerseRefFromTokens(tokens, index) {
   return null;
 }
 
+function getMatchingTeachers(otherLectures, tokens) {
+  const matches = new Set();
+  for (const lecture of otherLectures || []) {
+    const swami = (lecture.swami || '').toLowerCase();
+    const title = (lecture.title || '').toLowerCase();
+    for (const token of tokens) {
+      if (swami.includes(token) || title.includes(token)) {
+        matches.add(lecture.swami);
+      }
+    }
+  }
+  return Array.from(matches);
+}
+
 function scoreVerse(verseKey, entry, tokens) {
   let score = 0;
   const searchText = entry.searchText || '';
@@ -41,6 +55,11 @@ function scoreVerse(verseKey, entry, tokens) {
       .map((k) => k.toLowerCase())
       .filter((k) => k.includes(' ') || ['karma', 'yoga', 'devotion', 'atman', 'gunas', 'meditation', 'detachment', 'grief', 'peace'].includes(k))
   );
+  const matchingTeachers = getMatchingTeachers(entry.otherLectures, tokens);
+
+  if (matchingTeachers.length > 0) {
+    score += 20 * matchingTeachers.length;
+  }
 
   for (let i = 0; i < tokens.length; i += 1) {
     const token = tokens[i];
@@ -66,7 +85,7 @@ function scoreVerse(verseKey, entry, tokens) {
     }
   }
 
-  return score;
+  return { score, matchingTeachers };
 }
 
 export function searchVerses(data, query, { limit = 30 } = {}) {
@@ -78,7 +97,7 @@ export function searchVerses(data, query, { limit = 30 } = {}) {
   const results = [];
 
   for (const [verseKey, entry] of Object.entries(data.verseMap)) {
-    const score = scoreVerse(verseKey, entry, tokens);
+    const { score, matchingTeachers } = scoreVerse(verseKey, entry, tokens);
     if (score <= 0) continue;
 
     const translation = entry.translation?.text || '';
@@ -87,6 +106,7 @@ export function searchVerses(data, query, { limit = 30 } = {}) {
       chapter: parseInt(verseKey.split('.')[0], 10),
       verse: parseInt(verseKey.split('.')[1], 10),
       score,
+      matchingTeachers,
       snippet: translation.length > 160
         ? `${translation.slice(0, 157).trim()}…`
         : translation,

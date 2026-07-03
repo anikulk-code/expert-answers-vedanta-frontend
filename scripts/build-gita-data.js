@@ -19,6 +19,8 @@ const DEFAULT_MAP_PATH =
   "/Users/aniruddhakulkarni/Documents/CodexProjects/swami-sarvapriyananda-gita-map.json";
 const DEFAULT_CACHE_PATH =
   "/Users/aniruddhakulkarni/Documents/CodexProjects/gita-verse-cache.json";
+const DEFAULT_OTHER_LECTURES_PATH =
+  "/Users/aniruddhakulkarni/Documents/CodexProjects/rk-order-gita-lectures-by-language.json";
 const DEFAULT_OUTPUT_PATH = path.join(
   __dirname,
   "..",
@@ -173,7 +175,113 @@ function buildSearchText(verseKey, chapterName, translationText, keywords) {
     .toLowerCase();
 }
 
-function buildSlimMap(mapData, cacheData) {
+function mergeOtherLectures(otherData) {
+  const verseOther = {};
+  const chapterOther = {};
+  const teachers = new Map();
+
+  function addTeacher(swami, language) {
+    if (!swami) return;
+    const key = `${swami}::${language || ""}`;
+    if (!teachers.has(key)) {
+      teachers.set(key, { swami, language: language || null });
+    }
+  }
+
+  function lectureRecord(lecture, meta, extra = {}) {
+    addTeacher(meta.swami, meta.language);
+    return {
+      swami: meta.swami,
+      language: meta.language || null,
+      videoId: lecture.videoId,
+      title: lecture.title,
+      url: lecture.url,
+      ...extra,
+    };
+  }
+
+  for (const series of otherData?.series || []) {
+    const meta = {
+      swami: series.swami,
+      language: series.language,
+    };
+    const byVideoId = Object.fromEntries(
+      (series.lectures || []).map((lecture) => [lecture.videoId, lecture]),
+    );
+
+    for (const [verseKey, videoIds] of Object.entries(series.verseToLectures || {})) {
+      for (const videoId of videoIds) {
+        const lecture = byVideoId[videoId];
+        if (!lecture) continue;
+        verseOther[verseKey] = verseOther[verseKey] || [];
+        verseOther[verseKey].push(
+          lectureRecord(lecture, meta, { granularity: "verse" }),
+        );
+      }
+    }
+  }
+
+  for (const series of otherData?.chapterLevelSeries || []) {
+    const meta = {
+      swami: series.swami,
+      language: series.language,
+    };
+
+    for (const lecture of series.lectures || []) {
+      const chapter = lecture.chapter;
+      if (!chapter) continue;
+      const chapterKey = String(chapter);
+      chapterOther[chapterKey] = chapterOther[chapterKey] || [];
+      chapterOther[chapterKey].push(
+        lectureRecord(lecture, meta, { granularity: "chapter-level" }),
+      );
+    }
+  }
+
+  return {
+    verseOther,
+    chapterOther,
+    teachers: Array.from(teachers.values()).sort((a, b) =>
+      a.swami.localeCompare(b.swami),
+    ),
+  };
+}
+
+function enrichSearchForOtherTeachers(entry, otherLectures) {
+  const extraKeywords = [];
+  const extraText = [];
+
+  for (const lecture of otherLectures || []) {
+    if (lecture.swami) {
+      extraKeywords.push(lecture.swami.toLowerCase());
+      extraKeywords.push(
+        ...lecture.swami
+          .replace(/^swami\s+/i, "")
+          .split(/\s+/)
+          .filter((part) => part.length > 2),
+      );
+    }
+    if (lecture.language) extraKeywords.push(lecture.language.toLowerCase());
+    if (lecture.title) extraText.push(lecture.title);
+  }
+
+  const mergedKeywords = Array.from(
+    new Set([...(entry.keywords || []), ...extraKeywords.filter(Boolean)]),
+  ).slice(0, 32);
+
+  return {
+    keywords: mergedKeywords,
+    searchText: buildSearchText(
+      entry.verseKey,
+      entry.chapterName,
+      entry.translationText,
+      mergedKeywords,
+    ).concat(extraText.length ? ` ${extraText.join(" ").toLowerCase()}` : ""),
+  };
+}
+
+function buildSlimMap(mapData, cacheData, otherData) {
+  const { verseOther, chapterOther, teachers } = mergeOtherLectures(otherData);
   const verseMap = {};
 
   for (const [key, entry] of Object.entries(mapData.verseMap || {})) {
@@ -183,11 +291,15 @@ function buildSlimMap(mapData, cacheData) {
     const chapterName = CHAPTER_NAMES[chapter] || "";
     const translationText = entry.translation?.text || "";
     const keywords = extractKeywords(key, chapter, translationText, chapterName);
-    const searchText = buildSearchText(
-      key,
-      chapterName,
-      translationText,
-      keywords,
+    const otherLectures = verseOther[key] || [];
+    const searchMeta = enrichSearchForOtherTeachers(
+      {
+        verseKey: key,
+        chapterName,
+        translationText,
+        keywords,
+      },
+      otherLectures,
     );
 
     verseMap[key] = {
@@ -195,8 +307,9 @@ function buildSlimMap(mapData, cacheData) {
       transliteration: cacheEntry.transliteration || "",
       translation: entry.translation || null,
       translationSource: entry.translationSource || null,
-      keywords,
-      searchText,
+      keywords: searchMeta.keywords,
+      searchText: searchMeta.searchText,
+      otherLectures,
       lecture: chosen
         ? {
             lectureNumber: chosen.lectureNumber,
@@ -212,8 +325,16 @@ function buildSlimMap(mapData, cacheData) {
     generatedAt: mapData.generatedAt,
     updatedAt: mapData.updatedAt || mapData.generatedAt,
     source: mapData.source,
+    otherTeachersSource: otherData
+      ? {
+          generatedAt: otherData.generatedAt,
+          description: otherData.description,
+        }
+      : null,
     chapterVerseCounts: mapData.chapterVerseCounts,
     chapterNames: CHAPTER_NAMES,
+    otherTeachers: teachers,
+    chapterOtherLectures: chapterOther,
     mappedVerseCount: Object.keys(verseMap).length,
     verseMap,
   };
@@ -222,11 +343,16 @@ function buildSlimMap(mapData, cacheData) {
 function main() {
   const mapPath = process.env.GITA_MAP_PATH || DEFAULT_MAP_PATH;
   const cachePath = process.env.GITA_CACHE_PATH || DEFAULT_CACHE_PATH;
+  const otherPath = process.env.GITA_OTHER_LECTURES_PATH || DEFAULT_OTHER_LECTURES_PATH;
   const outputPath = process.env.GITA_OUTPUT_PATH || DEFAULT_OUTPUT_PATH;
 
   const mapData = loadJson(mapPath);
   const cacheData = loadJson(cachePath);
-  const slim = buildSlimMap(mapData, cacheData);
+  const otherData = fs.existsSync(otherPath) ? loadJson(otherPath) : null;
+  if (!otherData) {
+    console.warn(`Other lectures file not found: ${otherPath}`);
+  }
+  const slim = buildSlimMap(mapData, cacheData, otherData);
 
   fs.mkdirSync(path.dirname(outputPath), { recursive: true });
   fs.writeFileSync(outputPath, `${JSON.stringify(slim, null, 2)}\n`);

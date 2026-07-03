@@ -14,6 +14,7 @@
     "start": "react-scripts start",
     "build": "react-scripts build",
     "build:gita-data": "node scripts/build-gita-data.js",
+    "build:gospel-data": "node scripts/build-gospel-data.js",
     "test": "react-scripts test",
     "eject": "react-scripts eject"
   },

@@ -6,6 +6,8 @@ import {
   useGitaData,
   verseKey,
 } from '../../context/GitaDataContext';
+import { useGitaTeacherFilter } from '../../hooks/useGitaTeacherFilter';
+import GitaLectureList from './GitaLectureList';
 import './Gita.css';
 
 function GitaVerse() {
@@ -13,6 +15,7 @@ function GitaVerse() {
   const chapter = parseInt(chapterParam, 10);
   const verse = parseInt(verseParam, 10);
   const { data, loading, error } = useGitaData();
+  const { withTeacherQuery } = useGitaTeacherFilter();
 
   if (
     Number.isNaN(chapter) ||
@@ -20,12 +23,12 @@ function GitaVerse() {
     chapter < 1 ||
     chapter > 18
   ) {
-    return <Navigate to="/gita" replace />;
+    return <Navigate to={withTeacherQuery('/gita')} replace />;
   }
 
   const verseCount = data ? getChapterVerseCount(data, chapter) : 0;
   if (verse < 1 || verse > verseCount) {
-    return <Navigate to={`/gita/${chapter}`} replace />;
+    return <Navigate to={withTeacherQuery(`/gita/${chapter}`)} replace />;
   }
 
   if (loading) {
@@ -43,9 +46,9 @@ function GitaVerse() {
     return (
       <div className="gita-page">
         <nav className="gita-breadcrumb">
-          <Link to="/gita">Gita</Link>
+          <Link to={withTeacherQuery('/gita')}>Gita</Link>
           <span aria-hidden="true"> / </span>
-          <Link to={`/gita/${chapter}`}>Chapter {chapter}</Link>
+          <Link to={withTeacherQuery(`/gita/${chapter}`)}>Chapter {chapter}</Link>
           <span aria-hidden="true"> / </span>
           <span>Verse {verse}</span>
         </nav>
@@ -55,7 +58,7 @@ function GitaVerse() {
             Swamiji&apos;s lecture for this verse is not mapped yet. Check back
             as the series continues.
           </p>
-          <Link to={`/gita/${chapter}`} className="gita-back-link">
+          <Link to={withTeacherQuery(`/gita/${chapter}`)} className="gita-back-link">
             Back to Chapter {chapter}
           </Link>
         </div>
@@ -63,17 +66,21 @@ function GitaVerse() {
     );
   }
 
-  const { slok, transliteration, translation, translationSource, lecture } = entry;
-  const embedUrl = lecture?.videoId
-    ? `https://www.youtube.com/embed/${lecture.videoId}?rel=0`
-    : null;
+  const {
+    slok,
+    transliteration,
+    translation,
+    translationSource,
+    lecture,
+    otherLectures,
+  } = entry;
 
   return (
     <div className="gita-page">
       <nav className="gita-breadcrumb">
-        <Link to="/gita">Gita</Link>
+        <Link to={withTeacherQuery('/gita')}>Gita</Link>
         <span aria-hidden="true"> / </span>
-        <Link to={`/gita/${chapter}`}>Chapter {chapter}</Link>
+        <Link to={withTeacherQuery(`/gita/${chapter}`)}>Chapter {chapter}</Link>
         <span aria-hidden="true"> / </span>
         <span>Verse {verse}</span>
       </nav>
@@ -115,45 +122,31 @@ function GitaVerse() {
         </section>
       )}
 
-      {lecture && (
-        <section className="gita-lecture-block">
-          <h3 className="gita-section-label">Lecture</h3>
-          <p className="gita-lecture-title">{lecture.title}</p>
-          {embedUrl && (
-            <div className="gita-video-wrap">
-              <iframe
-                title={lecture.title}
-                src={embedUrl}
-                referrerPolicy="strict-origin-when-cross-origin"
-                allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
-                allowFullScreen
-              />
-            </div>
-          )}
-          {lecture.url && (
-            <a
-              className="gita-source-link"
-              href={lecture.url}
-              target="_blank"
-              rel="noopener noreferrer"
-            >
-              Open on YouTube
-            </a>
-          )}
-        </section>
-      )}
+      <GitaLectureList
+        primaryLecture={lecture}
+        otherLectures={otherLectures}
+      />
 
       <div className="gita-verse-nav">
         {verse > 1 && (
-          <Link to={`/gita/${chapter}/${verse - 1}`} className="gita-nav-link">
+          <Link
+            to={withTeacherQuery(`/gita/${chapter}/${verse - 1}`)}
+            className="gita-nav-link"
+          >
             ← {chapter}.{verse - 1}
           </Link>
         )}
-        <Link to={`/gita/${chapter}`} className="gita-nav-link gita-nav-center">
+        <Link
+          to={withTeacherQuery(`/gita/${chapter}`)}
+          className="gita-nav-link gita-nav-center"
+        >
           Chapter {chapter}
         </Link>
         {verse < verseCount && (
-          <Link to={`/gita/${chapter}/${verse + 1}`} className="gita-nav-link">
+          <Link
+            to={withTeacherQuery(`/gita/${chapter}/${verse + 1}`)}
+            className="gita-nav-link"
+          >
             {chapter}.{verse + 1} →
           </Link>
         )}
