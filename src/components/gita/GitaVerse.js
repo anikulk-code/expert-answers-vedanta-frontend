@@ -124,6 +124,7 @@ function GitaVerse() {
               <iframe
                 title={lecture.title}
                 src={embedUrl}
+                referrerPolicy="strict-origin-when-cross-origin"
                 allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
                 allowFullScreen
               />
