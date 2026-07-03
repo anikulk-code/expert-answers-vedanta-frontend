@@ -1,12 +1,3 @@
-const STOP_WORDS = new Set([
-  'about', 'after', 'also', 'been', 'being', 'both', 'from', 'have', 'into',
-  'more', 'most', 'must', 'neither', 'never', 'only', 'other', 'shall', 'should',
-  'such', 'than', 'that', 'the', 'their', 'them', 'then', 'there', 'these',
-  'they', 'this', 'those', 'through', 'unto', 'upon', 'very', 'what', 'when',
-  'where', 'which', 'while', 'with', 'would', 'your', 'yours', 'said', 'even',
-  'does', 'done', 'each', 'will', 'whom', 'whose', 'because', 'before', 'between',
-]);
-
 function tokenizeQuery(query) {
   return String(query || '')
     .toLowerCase()
