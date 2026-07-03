@@ -1,0 +1,318 @@
+.gita-page {
+  max-width: 760px;
+  margin: 0 auto;
+  padding-bottom: 3rem;
+}
+
+.gita-status {
+  text-align: center;
+  padding: 3rem 1rem;
+  color: #6b5344;
+  font-family: Georgia, 'Times New Roman', serif;
+}
+
+.gita-status-error {
+  color: #9b2c2c;
+}
+
+.gita-breadcrumb {
+  margin-bottom: 1.5rem;
+  font-size: 0.9rem;
+  color: #8a735f;
+}
+
+.gita-breadcrumb a {
+  color: #8b2635;
+  text-decoration: none;
+}
+
+.gita-breadcrumb a:hover {
+  text-decoration: underline;
+}
+
+.gita-header {
+  margin-bottom: 2.5rem;
+  text-align: center;
+}
+
+.gita-header-verse {
+  margin-bottom: 2rem;
+}
+
+.gita-kicker {
+  margin: 0 0 0.5rem;
+  font-size: 0.85rem;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  color: #8a735f;
+  font-family: Georgia, 'Times New Roman', serif;
+}
+
+.gita-title {
+  margin: 0 0 0.75rem;
+  font-family: Georgia, 'Times New Roman', serif;
+  font-size: clamp(1.75rem, 4vw, 2.4rem);
+  font-weight: 500;
+  color: #2c1810;
+  line-height: 1.25;
+}
+
+.gita-verse-ref {
+  font-size: clamp(2rem, 5vw, 2.75rem);
+}
+
+.gita-subtitle {
+  margin: 0;
+  color: #6b5344;
+  font-family: Georgia, 'Times New Roman', serif;
+  font-size: 1.05rem;
+}
+
+.gita-source-link {
+  display: inline-block;
+  margin-top: 1rem;
+  color: #8b2635;
+  font-size: 0.95rem;
+  text-decoration: none;
+}
+
+.gita-source-link:hover {
+  text-decoration: underline;
+}
+
+.gita-chapter-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(220px, 1fr));
+  gap: 1rem;
+}
+
+.gita-chapter-card {
+  display: flex;
+  flex-direction: column;
+  gap: 0.35rem;
+  padding: 1.25rem 1.1rem;
+  background: #faf6f0;
+  border: 1px solid #e8ddd0;
+  border-radius: 4px;
+  text-decoration: none;
+  color: inherit;
+  transition: border-color 0.2s, box-shadow 0.2s;
+}
+
+.gita-chapter-card:hover {
+  border-color: #c9a87c;
+  box-shadow: 0 2px 12px rgba(44, 24, 16, 0.06);
+}
+
+.gita-chapter-number {
+  font-size: 0.8rem;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: #8b2635;
+  font-family: Georgia, 'Times New Roman', serif;
+}
+
+.gita-chapter-name {
+  font-family: Georgia, 'Times New Roman', serif;
+  font-size: 1.05rem;
+  color: #2c1810;
+  line-height: 1.35;
+}
+
+.gita-chapter-meta {
+  font-size: 0.85rem;
+  color: #8a735f;
+}
+
+.gita-verse-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(52px, 1fr));
+  gap: 0.6rem;
+}
+
+.gita-verse-tile {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  min-height: 52px;
+  border-radius: 4px;
+  font-family: Georgia, 'Times New Roman', serif;
+  font-size: 1rem;
+}
+
+.gita-verse-tile-mapped {
+  background: #faf6f0;
+  border: 1px solid #d4c4b0;
+  color: #2c1810;
+  text-decoration: none;
+  transition: background 0.2s, border-color 0.2s;
+}
+
+.gita-verse-tile-mapped:hover {
+  background: #f3ebe0;
+  border-color: #8b2635;
+  color: #8b2635;
+}
+
+.gita-verse-tile-unmapped {
+  background: #f0ece6;
+  border: 1px dashed #d4c4b0;
+  color: #b5a08a;
+  cursor: default;
+}
+
+.gita-verse-block,
+.gita-lecture-block {
+  margin-bottom: 2rem;
+  padding-bottom: 2rem;
+  border-bottom: 1px solid #e8ddd0;
+}
+
+.gita-section-label {
+  margin: 0 0 1rem;
+  font-size: 0.75rem;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  color: #8a735f;
+  font-weight: 500;
+  font-family: Georgia, 'Times New Roman', serif;
+}
+
+.gita-slok {
+  margin: 0;
+  font-family: 'Noto Sans Devanagari', 'Devanagari MT', sans-serif;
+  font-size: clamp(1.35rem, 4vw, 1.75rem);
+  line-height: 1.8;
+  text-align: center;
+  color: #2c1810;
+  white-space: pre-line;
+}
+
+.gita-transliteration {
+  margin: 0;
+  font-family: Georgia, 'Times New Roman', serif;
+  font-size: 1.05rem;
+  line-height: 1.7;
+  color: #4a3728;
+  font-style: italic;
+  white-space: pre-line;
+}
+
+.gita-speaker {
+  margin: 0 0 0.5rem;
+  font-family: Georgia, 'Times New Roman', serif;
+  font-size: 0.95rem;
+  color: #8a735f;
+  font-style: italic;
+}
+
+.gita-translation {
+  margin: 0;
+  font-family: Georgia, 'Times New Roman', serif;
+  font-size: 1.15rem;
+  line-height: 1.75;
+  color: #2c1810;
+}
+
+.gita-attribution {
+  margin: 1rem 0 0;
+  font-size: 0.85rem;
+  color: #8a735f;
+  font-family: Georgia, 'Times New Roman', serif;
+}
+
+.gita-lecture-title {
+  margin: 0 0 1rem;
+  font-family: Georgia, 'Times New Roman', serif;
+  font-size: 1rem;
+  color: #4a3728;
+  line-height: 1.5;
+}
+
+.gita-video-wrap {
+  position: relative;
+  width: 100%;
+  padding-bottom: 56.25%;
+  margin-bottom: 1rem;
+  background: #2c1810;
+  border-radius: 4px;
+  overflow: hidden;
+}
+
+.gita-video-wrap iframe {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  border: 0;
+}
+
+.gita-coming-soon {
+  text-align: center;
+  padding: 3rem 1rem;
+  background: #faf6f0;
+  border: 1px solid #e8ddd0;
+  border-radius: 4px;
+}
+
+.gita-coming-soon h2 {
+  margin: 0 0 1rem;
+  font-family: Georgia, 'Times New Roman', serif;
+  color: #2c1810;
+}
+
+.gita-coming-soon p {
+  margin: 0 0 1.5rem;
+  color: #6b5344;
+  font-family: Georgia, 'Times New Roman', serif;
+  line-height: 1.6;
+}
+
+.gita-back-link {
+  color: #8b2635;
+  text-decoration: none;
+  font-family: Georgia, 'Times New Roman', serif;
+}
+
+.gita-back-link:hover {
+  text-decoration: underline;
+}
+
+.gita-verse-nav {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 1rem;
+  margin-top: 2rem;
+  padding-top: 1.5rem;
+  border-top: 1px solid #e8ddd0;
+}
+
+.gita-nav-link {
+  color: #8b2635;
+  text-decoration: none;
+  font-family: Georgia, 'Times New Roman', serif;
+  font-size: 0.95rem;
+}
+
+.gita-nav-link:hover {
+  text-decoration: underline;
+}
+
+.gita-nav-center {
+  color: #6b5344;
+}
+
+.gita-shell {
+  background: #fffdf9;
+  border-radius: 6px;
+  padding: 1.5rem;
+  border: 1px solid #e8ddd0;
+}
+
+@media (max-width: 600px) {
+  .gita-verse-nav {
+    flex-direction: column;
+    text-align: center;
+  }
+}
