@@ -89,18 +89,114 @@ function pickLecture(verseKey, lectures) {
   return lectures[lectures.length - 1];
 }
 
+const STOP_WORDS = new Set([
+  "about", "after", "also", "been", "being", "both", "from", "have", "into",
+  "more", "most", "must", "neither", "never", "only", "other", "shall", "should",
+  "such", "than", "that", "the", "their", "them", "then", "there", "these",
+  "they", "this", "those", "through", "unto", "upon", "very", "what", "when",
+  "where", "which", "while", "with", "would", "your", "yours", "said", "even",
+  "does", "done", "each", "will", "whom", "whose", "because", "before", "between",
+]);
+
+function inferThemes(text) {
+  const lower = String(text || "").toLowerCase();
+  const themes = [];
+  const checks = [
+    [/\bkarma\b|fruits of action|fruits thereof|right is to work|selfless action/, "karma", "karma yoga"],
+    [/action|work|duty|deed/, "action", "duty"],
+    [/fruit|result|attachment|desire|passion|detachment|inaction/, "detachment", "attachment"],
+    [/knowledge|wisdom|know|ignorance|delusion/, "knowledge", "wisdom"],
+    [/self|atman|brahman|soul|embodied|immortal/, "atman", "self", "immortal"],
+    [/mind|sense|senses|control|restrain/, "mind", "senses"],
+    [/devotion|devotee|worship|lord|supreme|bhakti/, "devotion", "bhakti"],
+    [/meditat|yoga|concentration|equanimity/, "yoga", "meditation", "equanimity"],
+    [/birth|death|body|dies|born/, "death", "impermanence"],
+    [/sacrifice|offering|rite|ritual/, "sacrifice", "offering"],
+    [/guna|sattva|rajas|tamas|prakriti/, "gunas", "sattva", "rajas", "tamas"],
+    [/food|austerity|charity|faith/, "faith", "charity", "austerity"],
+    [/fear|anger|lust|greed|demonic|divine/, "fear", "anger", "greed"],
+    [/grief|sorrow|lament|despond/, "grief", "sorrow", "despondency"],
+    [/peace|calm|steady|serene/, "peace", "steadiness"],
+  ];
+
+  for (const row of checks) {
+    const pattern = row[0];
+    const labels = row.slice(1);
+    if (pattern.test(lower)) {
+      for (const label of labels) {
+        if (!themes.includes(label)) themes.push(label);
+      }
+    }
+    if (themes.length >= 8) break;
+  }
+
+  return themes;
+}
+
+function extractKeywords(verseKey, chapter, translationText, chapterName) {
+  const keywords = new Set();
+  const chapterNum = parseInt(verseKey.split(".")[0], 10);
+  const verseNum = parseInt(verseKey.split(".")[1], 10);
+
+  keywords.add(verseKey);
+  keywords.add(`chapter ${chapterNum}`);
+  keywords.add(`verse ${verseNum}`);
+
+  String(chapterName || "")
+    .toLowerCase()
+    .split(/[^a-z0-9']+/i)
+    .filter((word) => word.length > 2 && !STOP_WORDS.has(word))
+    .forEach((word) => keywords.add(word));
+
+  inferThemes(translationText).forEach((theme) => keywords.add(theme));
+
+  String(translationText || "")
+    .toLowerCase()
+    .replace(/[^\w\s'-]/g, " ")
+    .split(/\s+/)
+    .filter((word) => word.length > 3 && !STOP_WORDS.has(word))
+    .slice(0, 14)
+    .forEach((word) => keywords.add(word));
+
+  return Array.from(keywords).filter(Boolean).slice(0, 24);
+}
+
+function buildSearchText(verseKey, chapterName, translationText, keywords) {
+  return [
+    verseKey,
+    chapterName,
+    translationText,
+    ...keywords,
+  ]
+    .filter(Boolean)
+    .join(" ")
+    .toLowerCase();
+}
+
 function buildSlimMap(mapData, cacheData) {
   const verseMap = {};
 
   for (const [key, entry] of Object.entries(mapData.verseMap || {})) {
     const cacheEntry = cacheData[key] || {};
     const chosen = pickLecture(key, entry.lectures);
+    const chapter = parseInt(key.split(".")[0], 10);
+    const chapterName = CHAPTER_NAMES[chapter] || "";
+    const translationText = entry.translation?.text || "";
+    const keywords = extractKeywords(key, chapter, translationText, chapterName);
+    const searchText = buildSearchText(
+      key,
+      chapterName,
+      translationText,
+      keywords,
+    );
 
     verseMap[key] = {
       slok: cacheEntry.slok || "",
       transliteration: cacheEntry.transliteration || "",
       translation: entry.translation || null,
       translationSource: entry.translationSource || null,
+      keywords,
+      searchText,
       lecture: chosen
         ? {
             lectureNumber: chosen.lectureNumber,

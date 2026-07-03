@@ -1,6 +1,7 @@
 import React from 'react';
 import { Link } from 'react-router-dom';
 import { getChapterName, getChapterVerseCount, useGitaData } from '../../context/GitaDataContext';
+import GitaSearch from './GitaSearch';
 import './Gita.css';
 
 const CHAPTERS = Array.from({ length: 18 }, (_, index) => index + 1);
@@ -35,6 +36,8 @@ function GitaLanding() {
           </a>
         )}
       </header>
+
+      <GitaSearch />
 
       <div className="gita-chapter-grid">
         {CHAPTERS.map((chapter) => {

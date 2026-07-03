@@ -17,7 +17,7 @@ Expert Answers helps users ask natural-language spiritual questions and receive 
   - YouTube Data API for thumbnails and some legacy helpers
 - Frontend: `expert-answers-vedanta-frontend`
   - React
-  - Main tabs: Search and Explore by Topic
+  - Main tabs: Search, Explore by Topic, and **Gita**
   - Optional Debug tab only when `REACT_APP_ENABLE_DEBUG=true`
   - API base from `REACT_APP_API_URL`, otherwise falls back to the deployed Azure API URL
 
@@ -143,6 +143,7 @@ Do not describe the following as part of the live core product unless a specific
 
 - Cosmos firewall/networking matters in production. Azure-hosted API access to Cosmos must be correctly allowed, otherwise production can fail even when local development works.
 - Frontend CI can fail on ESLint warnings when `CI=true`, so warnings should be treated seriously in PR checks.
+- **Gita tab YouTube embeds:** Azure Static Web Apps defaults to `Referrer-Policy: same-origin`, which breaks YouTube iframe embeds (Error 153) in production even when they work on localhost. Fix is in `staticwebapp.config.json` (`globalHeaders.Referrer-Policy: strict-origin-when-cross-origin`) plus `referrerPolicy="strict-origin-when-cross-origin"` on the Gita lecture iframe. See `gita_feature_prompt.md` for details.
 
 ## Roadmap framing
 
