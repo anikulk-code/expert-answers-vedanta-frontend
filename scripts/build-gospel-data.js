@@ -26,12 +26,19 @@ function loadJson(filePath) {
 }
 
 function slimTalk(talk) {
+  const ref = talk.gospelReference || {};
+
   return {
     speaker: talk.speaker,
     title: talk.title,
     videoId: talk.videoId,
     url: talk.url,
-    mappingConfidence: talk.gospelReference?.mappingConfidence || null,
+    part: ref.part ?? null,
+    dateText: ref.dateText || null,
+    sectionTitles: ref.sectionTitles || [],
+    sectionStart: ref.sectionStart ?? null,
+    sectionEnd: ref.sectionEnd ?? null,
+    mappingConfidence: ref.mappingConfidence || null,
   };
 }
 

@@ -6,6 +6,7 @@ import {
   useGospelData,
 } from '../../context/GospelDataContext';
 import { useGospelTeacherFilter } from '../../hooks/useGospelTeacherFilter';
+import { groupGospelChapterContent } from '../../utils/gospelSections';
 import '../gita/Gita.css';
 
 function youtubeEmbedUrl(videoId) {
@@ -61,6 +62,38 @@ function GospelTalkLink({ talk }) {
   );
 }
 
+function GospelSectionTalks({ group, sarvapriyanandaOnly }) {
+  const hasSarvapriyananda = group.sarvapriyanandaTalks.length > 0;
+  const hasRelated = !sarvapriyanandaOnly && group.relatedTalks.length > 0;
+
+  if (!hasSarvapriyananda && !hasRelated) {
+    return null;
+  }
+
+  return (
+    <div className="gospel-section-talks">
+      {hasSarvapriyananda && (
+        <div className="gita-lecture-list">
+          {group.sarvapriyanandaTalks.map((talk) => (
+            <GospelTalkEmbed
+              key={talk.videoId}
+              talk={talk}
+              label="Swami Sarvapriyananda"
+            />
+          ))}
+        </div>
+      )}
+      {hasRelated && (
+        <div className="gita-lecture-list gospel-related-talks">
+          {group.relatedTalks.map((talk) => (
+            <GospelTalkLink key={`${talk.videoId}-${talk.speaker}`} talk={talk} />
+          ))}
+        </div>
+      )}
+    </div>
+  );
+}
+
 function GospelChapter() {
   const { chapter: chapterParam } = useParams();
   const chapterNumber = parseInt(chapterParam, 10);
@@ -85,6 +118,19 @@ function GospelChapter() {
   if (!chapter) {
     return <Navigate to={withTeacherQuery('/gospel')} replace />;
   }
+
+  const { groups, unassigned, hasAssignedTalks } = groupGospelChapterContent(
+    chapter,
+    talks,
+    { sarvapriyanandaOnly }
+  );
+
+  const hasUnassigned =
+    unassigned.sarvapriyanandaTalks.length > 0 || unassigned.relatedTalks.length > 0;
+
+  const hasAnyTalks =
+    talks.sarvapriyanandaTalks.length > 0 ||
+    (!sarvapriyanandaOnly && talks.relatedTalks.length > 0);
 
   return (
     <div className="gita-page">
@@ -115,33 +161,34 @@ function GospelChapter() {
         )}
       </header>
 
-      {chapter.sections?.length > 0 && (
-        <section className="gita-verse-block">
-          <h3 className="gita-section-label">Sections in this chapter</h3>
-          <ul className="gospel-section-list">
-            {chapter.sections.map((section) => (
-              <li key={section}>{section}</li>
-            ))}
-          </ul>
+      {groups.length > 0 && (
+        <section className="gospel-section-groups">
+          {groups.map((group) => (
+            <article
+              key={`${group.sectionIndex}-${group.sectionTitle}`}
+              className="gospel-section-group"
+            >
+              <h3 className="gospel-section-heading">{group.sectionTitle}</h3>
+              <GospelSectionTalks
+                group={group}
+                sarvapriyanandaOnly={sarvapriyanandaOnly}
+              />
+            </article>
+          ))}
         </section>
       )}
 
-      {talks.sarvapriyanandaTalks.length > 0 ? (
+      {hasUnassigned && (
         <section className="gita-lecture-block">
-          <h3 className="gita-section-label">
-            Talks · Swami Sarvapriyananda
-          </h3>
-          <div className="gita-lecture-list">
-            {talks.sarvapriyanandaTalks.map((talk) => (
-              <GospelTalkEmbed
-                key={talk.videoId}
-                talk={talk}
-                label="Swami Sarvapriyananda"
-              />
-            ))}
-          </div>
+          <h3 className="gita-section-label">Chapter-level talks</h3>
+          <GospelSectionTalks
+            group={unassigned}
+            sarvapriyanandaOnly={sarvapriyanandaOnly}
+          />
         </section>
-      ) : (
+      )}
+
+      {!hasAnyTalks && (
         <section className="gita-coming-soon">
           <p>
             Swami Sarvapriyananda&apos;s talk for this chapter is not mapped
@@ -150,14 +197,9 @@ function GospelChapter() {
         </section>
       )}
 
-      {!sarvapriyanandaOnly && talks.relatedTalks.length > 0 && (
-        <section className="gita-lecture-block">
-          <h3 className="gita-section-label">Other teachers on this chapter</h3>
-          <div className="gita-lecture-list">
-            {talks.relatedTalks.map((talk) => (
-              <GospelTalkLink key={`${talk.videoId}-${talk.speaker}`} talk={talk} />
-            ))}
-          </div>
+      {hasAnyTalks && !hasAssignedTalks && !hasUnassigned && (
+        <section className="gita-coming-soon">
+          <p>Talks for this chapter could not be matched to sections yet.</p>
         </section>
       )}
 
