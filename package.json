@@ -15,6 +15,7 @@
     "build": "react-scripts build",
     "build:gita-data": "node scripts/build-gita-data.js",
     "build:gospel-data": "node scripts/build-gospel-data.js",
+    "build:precanned-answers": "node scripts/build-precanned-answers.js",
     "test": "react-scripts test",
     "eject": "react-scripts eject"
   },

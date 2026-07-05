@@ -5,16 +5,19 @@ import './index.css';
 import App from './App';
 import { GitaDataProvider } from './context/GitaDataContext';
 import { GospelDataProvider } from './context/GospelDataContext';
+import { PrecannedAnswersProvider } from './context/PrecannedAnswersContext';
 
 const root = ReactDOM.createRoot(document.getElementById('root'));
 root.render(
   <React.StrictMode>
     <BrowserRouter>
-      <GitaDataProvider>
-        <GospelDataProvider>
-          <App />
-        </GospelDataProvider>
-      </GitaDataProvider>
+      <PrecannedAnswersProvider>
+        <GitaDataProvider>
+          <GospelDataProvider>
+            <App />
+          </GospelDataProvider>
+        </GitaDataProvider>
+      </PrecannedAnswersProvider>
     </BrowserRouter>
   </React.StrictMode>
 );

@@ -8,6 +8,8 @@ import SearchDebug from './components/SearchDebug';
 import ProgressBar from './components/ProgressBar';
 import GitaRoutes from './components/gita/GitaRoutes';
 import GospelRoutes from './components/gospel/GospelRoutes';
+import { usePrecannedAnswers } from './context/PrecannedAnswersContext';
+import { getPrecannedResponse } from './utils/precannedAnswers';
 
 function App() {
   const showDebug = process.env.REACT_APP_ENABLE_DEBUG === 'true';
@@ -25,6 +27,7 @@ function App() {
   const [loading, setLoading] = useState(false);
   const [loadingMessage, setLoadingMessage] = useState('Searching...');
   const [error, setError] = useState(null);
+  const { responsesByQuestion } = usePrecannedAnswers();
 
   const activeTab = location.pathname.startsWith('/gospel')
     ? 'gospel'
@@ -46,6 +49,22 @@ function App() {
     ? process.env.REACT_APP_API_URL
     : 'https://expertanswersapi-ege8htfcg5a0bgbk.westus2-01.azurewebsites.net';
 
+  const applyAnswerPayload = (data, question) => {
+    setQueueInfo(data.queueInfo || null);
+    setUserMessage(data.userMessage || null);
+
+    if (data.answers && data.answers.length > 0) {
+      setAnswers(data.answers);
+      setRelatedQuestion(data.relatedQuestion || null);
+      setSearchStatus('qa_match');
+      return;
+    }
+
+    setAnswers([]);
+    setRelatedQuestion(null);
+    setSearchStatus('no_results');
+  };
+
   const handleQuestionSubmit = async (question) => {
     setLoading(true);
     setError(null);
@@ -56,7 +75,6 @@ function App() {
     setQueueInfo(null);
     setUserMessage(null);
     setCurrentQuestion(question);
-    setLoadingMessage('Searching Q&A database...');
 
     try {
       const questionText = question.trim();
@@ -64,6 +82,15 @@ function App() {
       if (!questionText) {
         throw new Error('Please enter a question');
       }
+
+      const precanned = getPrecannedResponse(questionText, responsesByQuestion);
+      if (precanned) {
+        applyAnswerPayload(precanned, questionText);
+        setLoading(false);
+        return;
+      }
+
+      setLoadingMessage('Searching Q&A database...');
 
       const controller = new AbortController();
       const timeoutId = setTimeout(() => controller.abort(), 90000);
@@ -105,19 +132,7 @@ function App() {
       }
 
       const data = await response.json();
-
-      setQueueInfo(data.queueInfo || null);
-      setUserMessage(data.userMessage || null);
-
-      if (data.answers && data.answers.length > 0) {
-        setAnswers(data.answers);
-        setRelatedQuestion(data.relatedQuestion || null);
-        setSearchStatus('qa_match');
-        setLoading(false);
-        return;
-      }
-
-      setSearchStatus('no_results');
+      applyAnswerPayload(data, questionText);
       setLoading(false);
     } catch (err) {
       setError(err.message || 'An unexpected error occurred. Please try again.');

@@ -14,7 +14,7 @@ function formatTeacherMatches(teachers) {
 
 function GitaSearch() {
   const { data } = useGitaData();
-  const { withTeacherQuery } = useGitaTeacherFilter();
+  const { withTeacherQuery, sarvapriyanandaOnly } = useGitaTeacherFilter();
   const [query, setQuery] = useState('');
 
   const results = useMemo(
@@ -58,7 +58,7 @@ function GitaSearch() {
                   Chapter {result.chapter}
                   {result.chapterName ? ` · ${result.chapterName}` : ''}
                 </span>
-                {result.matchingTeachers?.length > 0 && (
+                {result.matchingTeachers?.length > 0 && !sarvapriyanandaOnly && (
                   <span className="gita-search-result-teachers">
                     Other teachers: {formatTeacherMatches(result.matchingTeachers)}
                   </span>

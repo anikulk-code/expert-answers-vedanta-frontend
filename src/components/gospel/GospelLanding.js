@@ -22,8 +22,8 @@ function GospelLanding() {
         <p className="gita-kicker">The Gospel of Sri Ramakrishna</p>
         <h2 className="gita-title">Swami Sarvapriyananda</h2>
         <p className="gita-subtitle">
-          Browse by Gospel chapter. Each chapter links to Swamiji&apos;s talks and,
-          by default, related talks from other teachers.
+          Browse by Gospel chapter. Swami Sarvapriyananda&apos;s talks are shown
+          by default.
         </p>
         {data?.sources?.sarvapriyanandaPlaylist?.url && (
           <a
