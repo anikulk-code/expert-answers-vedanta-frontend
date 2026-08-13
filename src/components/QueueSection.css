@@ -114,17 +114,27 @@
 
 .request-anyway-button {
   display: block;
-  margin: 1rem auto 0;
-  background: none;
-  border: none;
-  color: #4a5568;
-  text-decoration: underline;
+  width: 100%;
+  max-width: 320px;
+  margin: 1.25rem auto 0;
+  padding: 0.85rem 1.25rem;
+  background: #fff;
+  color: #9c4221;
+  border: 2px solid #c05621;
+  border-radius: 6px;
+  font-size: 1rem;
+  font-weight: 600;
   cursor: pointer;
-  font-size: 0.9rem;
 }
 
 .request-anyway-button:hover:not(:disabled) {
-  color: #2d3748;
+  background: #fffaf5;
+  color: #7b341e;
+}
+
+.request-anyway-button:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
 }
 
 .queue-status {
