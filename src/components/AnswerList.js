@@ -29,12 +29,12 @@ function AnswerList({
   apiUrl,
 }) {
   // Handle related questions fallback
-  if (searchStatus === 'related_questions' && relatedQuestions && relatedQuestions.length > 0) {
+  if (searchStatus === 'related_only' && relatedQuestions && relatedQuestions.length > 0) {
     return (
       <div className="answer-list">
         <div className="no-answers-message">
-          <p>We couldn&apos;t find a direct answer to your question in our Q&A database.</p>
-          <p className="suggestions-label">Try these related questions:</p>
+          <h2 className="no-answers-title">No direct answer found</h2>
+          <p className="suggestions-label">These answered questions may still be useful:</p>
           <div className="related-questions-pills">
             {relatedQuestions.map((q, index) => (
               <button
@@ -47,6 +47,12 @@ function AnswerList({
             ))}
           </div>
         </div>
+        <QueueSection
+          queueInfo={queueInfo}
+          userQuestion={currentQuestion}
+          apiUrl={apiUrl}
+          prominence="prominent"
+        />
       </div>
     );
   }
@@ -124,7 +130,7 @@ function AnswerList({
   }
 
   // Explicit no-match (and legacy tags_fallback)
-  if (searchStatus === 'no_results' || searchStatus === 'tags_fallback') {
+  if (searchStatus === 'unanswered' || searchStatus === 'no_results' || searchStatus === 'tags_fallback') {
     return (
       <div className="answer-list">
         <div className="no-answers-message no-answers-message-strong">
@@ -225,6 +231,23 @@ function AnswerList({
           >
             {relatedQuestion}
           </button>
+        </div>
+      )}
+
+      {relatedQuestions && relatedQuestions.length > 0 && (
+        <div className="related-question-section">
+          <h3>Related questions</h3>
+          <div className="related-questions-pills">
+            {relatedQuestions.map((question, index) => (
+              <button
+                key={index}
+                className="related-question-pill"
+                onClick={() => onRelatedQuestionClick(question)}
+              >
+                {question}
+              </button>
+            ))}
+          </div>
         </div>
       )}
 

@@ -60,7 +60,7 @@ function App() {
     if (hasAnswers) {
       setAnswers(data.answers);
       setRelatedQuestion(data.relatedQuestion || null);
-      setSearchStatus(apiStatus || 'qa_match');
+      setSearchStatus(apiStatus || 'answered');
       // Always defer queue work on hits (API no longer sends it; ignore stale precanned queueInfo)
       setQueueInfo(null);
       return;
@@ -69,11 +69,13 @@ function App() {
     setAnswers([]);
     setRelatedQuestion(null);
     setQueueInfo(data.queueInfo || null);
-    // Prefer API status; map legacy tags_fallback to a clear empty state
-    if (apiStatus === 'tags_fallback') {
-      setSearchStatus('no_results');
+    // Prefer the three-outcome API contract while accepting legacy responses.
+    if (apiStatus === 'tags_fallback' || apiStatus === 'no_results') {
+      setSearchStatus('unanswered');
+    } else if (apiStatus === 'related_questions') {
+      setSearchStatus('related_only');
     } else {
-      setSearchStatus(apiStatus || 'no_results');
+      setSearchStatus(apiStatus || 'unanswered');
     }
   };
 
@@ -165,8 +167,7 @@ function App() {
       {(answers.length > 0 ||
         relatedQuestions ||
         youtubeSearchResults ||
-        searchStatus === 'no_results' ||
-        searchStatus === 'tags_fallback' ||
+        searchStatus === 'unanswered' ||
         queueInfo) && (
         <AnswerList
           answers={answers}
