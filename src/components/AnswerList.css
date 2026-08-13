@@ -203,8 +203,26 @@
   font-size: 1.1rem;
 }
 
+.no-answers-message-strong {
+  border: 1px solid #e2e8f0;
+  border-left: 4px solid #c05621;
+  background: #fffaf5;
+}
+
+.no-answers-title {
+  margin: 0 0 0.75rem;
+  color: #9c4221;
+  font-size: 1.35rem;
+  font-weight: 700;
+}
+
 .no-answers-message p {
   margin: 0.5rem 0;
+}
+
+.no-answers-hint {
+  color: #4a5568;
+  font-size: 0.95rem;
 }
 
 .suggestions-label {

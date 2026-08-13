@@ -16,13 +16,24 @@ function timeToSeconds(timeStr) {
   return 0;
 }
 
-function AnswerList({ answers, relatedQuestion, relatedQuestions, youtubeSearchResults, searchStatus, queueInfo, userMessage, currentQuestion, onRelatedQuestionClick, apiUrl }) {
+function AnswerList({
+  answers,
+  relatedQuestion,
+  relatedQuestions,
+  youtubeSearchResults,
+  searchStatus,
+  queueInfo,
+  userMessage,
+  currentQuestion,
+  onRelatedQuestionClick,
+  apiUrl,
+}) {
   // Handle related questions fallback
   if (searchStatus === 'related_questions' && relatedQuestions && relatedQuestions.length > 0) {
     return (
       <div className="answer-list">
         <div className="no-answers-message">
-          <p>We couldn't find a direct answer to your question in our Q&A database.</p>
+          <p>We couldn&apos;t find a direct answer to your question in our Q&A database.</p>
           <p className="suggestions-label">Try these related questions:</p>
           <div className="related-questions-pills">
             {relatedQuestions.map((q, index) => (
@@ -40,7 +51,7 @@ function AnswerList({ answers, relatedQuestion, relatedQuestions, youtubeSearchR
     );
   }
 
-  // Handle YouTube search results
+  // Handle YouTube search results (legacy status; not used by current API)
   if (searchStatus === 'youtube_search' && youtubeSearchResults && youtubeSearchResults.length > 0) {
     return (
       <div className="answer-list">
@@ -55,32 +66,37 @@ function AnswerList({ answers, relatedQuestion, relatedQuestions, youtubeSearchR
             <div className="answer-content">
               {answer.thumbnail && (
                 <div className="thumbnail-container">
-                  <a 
-                    href={answer.videoLink + (answer.time && answer.time !== '00:00:00' ? `&t=${timeToSeconds(answer.time)}s` : '')}
-                    target="_blank" 
+                  <a
+                    href={
+                      answer.videoLink +
+                      (answer.time && answer.time !== '00:00:00'
+                        ? `&t=${timeToSeconds(answer.time)}s`
+                        : '')
+                    }
+                    target="_blank"
                     rel="noopener noreferrer"
                     className="thumbnail-link"
                   >
-                    <img 
-                      src={answer.thumbnail} 
-                      alt="Video thumbnail" 
-                      className="thumbnail"
-                    />
+                    <img src={answer.thumbnail} alt="Video thumbnail" className="thumbnail" />
                     <div className="play-icon-overlay">
-                      <svg width="64" height="64" viewBox="0 0 24 24" fill="white" xmlns="http://www.w3.org/2000/svg">
-                        <path d="M8 5v14l11-7z"/>
+                      <svg
+                        width="64"
+                        height="64"
+                        viewBox="0 0 24 24"
+                        fill="white"
+                        xmlns="http://www.w3.org/2000/svg"
+                      >
+                        <path d="M8 5v14l11-7z" />
                       </svg>
                     </div>
                   </a>
                 </div>
               )}
               <div className="answer-details">
-                {answer.questionTitle && (
-                  <h3 className="question-title">{answer.questionTitle}</h3>
-                )}
+                {answer.questionTitle && <h3 className="question-title">{answer.questionTitle}</h3>}
                 <div className="answer-header">
                   {answer.videoLink && (
-                    <a 
+                    <a
                       href={answer.videoLink}
                       target="_blank"
                       rel="noopener noreferrer"
@@ -97,40 +113,38 @@ function AnswerList({ answers, relatedQuestion, relatedQuestions, youtubeSearchR
             </div>
           </div>
         ))}
-        {queueInfo && (
-          <QueueSection 
-            queueInfo={queueInfo}
-            userQuestion={currentQuestion}
-            apiUrl={apiUrl}
-            prominence="prominent"
-          />
-        )}
+        <QueueSection
+          queueInfo={queueInfo}
+          userQuestion={currentQuestion}
+          apiUrl={apiUrl}
+          prominence="prominent"
+          lazyLoad={!queueInfo}
+        />
       </div>
     );
   }
 
-  // Handle no results
-  if (searchStatus === 'no_results') {
+  // Explicit no-match (and legacy tags_fallback)
+  if (searchStatus === 'no_results' || searchStatus === 'tags_fallback') {
     return (
       <div className="answer-list">
-        {userMessage && (
-          <div className="no-answers-message">
-            <p>{userMessage}</p>
-          </div>
-        )}
-        {!userMessage && (
-          <div className="no-answers-message">
-            <p>No results found. Try rephrasing your question or browse the playlist.</p>
-          </div>
-        )}
-        {queueInfo && (
-          <QueueSection 
-            queueInfo={queueInfo}
-            userQuestion={currentQuestion}
-            apiUrl={apiUrl}
-            prominence="very-prominent"
-          />
-        )}
+        <div className="no-answers-message no-answers-message-strong">
+          <h2 className="no-answers-title">No related Q&amp;A found</h2>
+          <p>
+            {userMessage ||
+              'We could not find a matching answered question in the AskSwami Q&A database.'}
+          </p>
+          <p className="no-answers-hint">
+            Upvote a similar unanswered question below, or add yours so it can be covered later.
+          </p>
+        </div>
+        <QueueSection
+          queueInfo={queueInfo}
+          userQuestion={currentQuestion}
+          apiUrl={apiUrl}
+          prominence="very-prominent"
+          lazyLoad={!queueInfo}
+        />
       </div>
     );
   }
@@ -140,15 +154,14 @@ function AnswerList({ answers, relatedQuestion, relatedQuestions, youtubeSearchR
     return null;
   }
 
-  // Get playlist ID from first answer (all should be from same playlist)
-  const playlistId = answers.length > 0 ? answers[0].playlistId : null;
+  const playlistId = answers[0].playlistId || null;
 
   return (
     <div className="answer-list">
       <div className="answer-list-header">
         <h2>Answers ({answers.length})</h2>
         {playlistId && (
-          <a 
+          <a
             href={`https://www.youtube.com/playlist?list=${playlistId}`}
             target="_blank"
             rel="noopener noreferrer"
@@ -163,32 +176,37 @@ function AnswerList({ answers, relatedQuestion, relatedQuestions, youtubeSearchR
           <div className="answer-content">
             {answer.thumbnail && (
               <div className="thumbnail-container">
-                <a 
-                  href={answer.videoLink + (answer.time && answer.time !== '00:00:00' ? `&t=${timeToSeconds(answer.time)}s` : '')}
-                  target="_blank" 
+                <a
+                  href={
+                    answer.videoLink +
+                    (answer.time && answer.time !== '00:00:00'
+                      ? `&t=${timeToSeconds(answer.time)}s`
+                      : '')
+                  }
+                  target="_blank"
                   rel="noopener noreferrer"
                   className="thumbnail-link"
                 >
-                  <img 
-                    src={answer.thumbnail} 
-                    alt="Video thumbnail" 
-                    className="thumbnail"
-                  />
+                  <img src={answer.thumbnail} alt="Video thumbnail" className="thumbnail" />
                   <div className="play-icon-overlay">
-                    <svg width="64" height="64" viewBox="0 0 24 24" fill="white" xmlns="http://www.w3.org/2000/svg">
-                      <path d="M8 5v14l11-7z"/>
+                    <svg
+                      width="64"
+                      height="64"
+                      viewBox="0 0 24 24"
+                      fill="white"
+                      xmlns="http://www.w3.org/2000/svg"
+                    >
+                      <path d="M8 5v14l11-7z" />
                     </svg>
                   </div>
                 </a>
               </div>
             )}
             <div className="answer-details">
-              {answer.questionTitle && (
-                <h3 className="question-title">{answer.questionTitle}</h3>
-              )}
+              {answer.questionTitle && <h3 className="question-title">{answer.questionTitle}</h3>}
               <div className="answer-header">
                 {answer.videoLink && (
-                  <a 
+                  <a
                     href={answer.videoLink}
                     target="_blank"
                     rel="noopener noreferrer"
@@ -201,18 +219,16 @@ function AnswerList({ answers, relatedQuestion, relatedQuestions, youtubeSearchR
                   <span className="date">{answer.date}</span>
                 )}
               </div>
-              {answer.region && (
-                <div className="region">Region: {answer.region}</div>
-              )}
+              {answer.region && <div className="region">Region: {answer.region}</div>}
             </div>
           </div>
         </div>
       ))}
-      
+
       {relatedQuestion && (
         <div className="related-question-section">
           <h3>Explore Next</h3>
-          <button 
+          <button
             className="related-question-button"
             onClick={() => onRelatedQuestionClick(relatedQuestion)}
           >
@@ -220,19 +236,17 @@ function AnswerList({ answers, relatedQuestion, relatedQuestions, youtubeSearchR
           </button>
         </div>
       )}
-      
-      {/* Show queue option for Q&A results - subtle if 3+ answers, more prominent if fewer */}
-      {queueInfo && (
-        <QueueSection 
-          queueInfo={queueInfo}
-          userQuestion={currentQuestion}
-          apiUrl={apiUrl}
-          prominence={answers.length >= 3 ? 'subtle' : 'prominent'}
-        />
-      )}
+
+      {/* Queue is deferred on hits — load only if the user expands the subtle CTA */}
+      <QueueSection
+        queueInfo={queueInfo}
+        userQuestion={currentQuestion}
+        apiUrl={apiUrl}
+        prominence="subtle"
+        lazyLoad
+      />
     </div>
   );
 }
 
 export default AnswerList;
-

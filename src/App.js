@@ -49,20 +49,32 @@ function App() {
     ? process.env.REACT_APP_API_URL
     : 'https://expertanswersapi-ege8htfcg5a0bgbk.westus2-01.azurewebsites.net';
 
-  const applyAnswerPayload = (data, question) => {
-    setQueueInfo(data.queueInfo || null);
+  const applyAnswerPayload = (data) => {
     setUserMessage(data.userMessage || null);
+    setRelatedQuestions(data.relatedQuestions || null);
+    setYoutubeSearchResults(data.youtubeSearchResults || null);
 
-    if (data.answers && data.answers.length > 0) {
+    const apiStatus = data.searchStatus || null;
+    const hasAnswers = Boolean(data.answers && data.answers.length > 0);
+
+    if (hasAnswers) {
       setAnswers(data.answers);
       setRelatedQuestion(data.relatedQuestion || null);
-      setSearchStatus('qa_match');
+      setSearchStatus(apiStatus || 'qa_match');
+      // Always defer queue work on hits (API no longer sends it; ignore stale precanned queueInfo)
+      setQueueInfo(null);
       return;
     }
 
     setAnswers([]);
     setRelatedQuestion(null);
-    setSearchStatus('no_results');
+    setQueueInfo(data.queueInfo || null);
+    // Prefer API status; map legacy tags_fallback to a clear empty state
+    if (apiStatus === 'tags_fallback') {
+      setSearchStatus('no_results');
+    } else {
+      setSearchStatus(apiStatus || 'no_results');
+    }
   };
 
   const handleQuestionSubmit = async (question) => {
@@ -85,7 +97,7 @@ function App() {
 
       const precanned = getPrecannedResponse(questionText, responsesByQuestion);
       if (precanned) {
-        applyAnswerPayload(precanned, questionText);
+        applyAnswerPayload(precanned);
         setLoading(false);
         return;
       }
@@ -132,7 +144,7 @@ function App() {
       }
 
       const data = await response.json();
-      applyAnswerPayload(data, questionText);
+      applyAnswerPayload(data);
       setLoading(false);
     } catch (err) {
       setError(err.message || 'An unexpected error occurred. Please try again.');
@@ -154,6 +166,7 @@ function App() {
         relatedQuestions ||
         youtubeSearchResults ||
         searchStatus === 'no_results' ||
+        searchStatus === 'tags_fallback' ||
         queueInfo) && (
         <AnswerList
           answers={answers}
