@@ -118,7 +118,6 @@ function AnswerList({
           userQuestion={currentQuestion}
           apiUrl={apiUrl}
           prominence="prominent"
-          lazyLoad={!queueInfo}
         />
       </div>
     );
@@ -130,20 +129,12 @@ function AnswerList({
       <div className="answer-list">
         <div className="no-answers-message no-answers-message-strong">
           <h2 className="no-answers-title">No related Q&amp;A found</h2>
-          <p>
-            {userMessage ||
-              'We could not find a matching answered question in the AskSwami Q&A database.'}
-          </p>
-          <p className="no-answers-hint">
-            Upvote a similar unanswered question below, or add yours so it can be covered later.
-          </p>
         </div>
         <QueueSection
           queueInfo={queueInfo}
           userQuestion={currentQuestion}
           apiUrl={apiUrl}
           prominence="very-prominent"
-          lazyLoad={!queueInfo}
         />
       </div>
     );
@@ -237,13 +228,11 @@ function AnswerList({
         </div>
       )}
 
-      {/* Queue is deferred on hits — load only if the user expands the subtle CTA */}
       <QueueSection
         queueInfo={queueInfo}
         userQuestion={currentQuestion}
         apiUrl={apiUrl}
         prominence="subtle"
-        lazyLoad
       />
     </div>
   );
