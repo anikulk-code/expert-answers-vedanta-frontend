@@ -220,6 +220,32 @@
   margin: 0.5rem 0;
 }
 
+.answered-related-heading {
+  align-items: center;
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  margin: 26px 0 18px;
+}
+
+.answered-related-heading .suggestions-label {
+  font-size: 1.2rem;
+  font-weight: 700;
+  margin: 0;
+}
+
+.answered-related-badge {
+  background: #e5f5ec;
+  border: 1px solid #7ebd99;
+  border-radius: 999px;
+  color: #17643a;
+  font-size: 0.95rem;
+  font-weight: 800;
+  letter-spacing: 0.04em;
+  padding: 6px 13px;
+  text-transform: uppercase;
+}
+
 .no-answers-hint {
   color: #4a5568;
   font-size: 0.95rem;
@@ -313,4 +339,3 @@
   transform: translateY(-1px);
   box-shadow: 0 2px 4px rgba(74, 144, 226, 0.3);
 }
-

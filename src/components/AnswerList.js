@@ -34,7 +34,10 @@ function AnswerList({
       <div className="answer-list">
         <div className="no-answers-message">
           <h2 className="no-answers-title">No direct answer found</h2>
-          <p className="suggestions-label">These answered questions may still be useful:</p>
+          <div className="answered-related-heading">
+            <span className="answered-related-badge">✓ Answered</span>
+            <p className="suggestions-label">Related questions with answers</p>
+          </div>
           <div className="related-questions-pills">
             {relatedQuestions.map((q, index) => (
               <button

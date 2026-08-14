@@ -161,7 +161,7 @@ function QueueSection({
             }}
             disabled={busy}
           >
-            {busy ? 'Checking...' : 'Request this question'}
+            {busy ? 'Checking...' : 'Request this exact question'}
           </button>
         </p>
       </div>
@@ -216,7 +216,7 @@ function QueueSection({
           onClick={handleRequest}
           disabled={busy || !userQuestion?.trim()}
         >
-          {busy ? 'Checking...' : 'Request this question'}
+          {busy ? 'Checking...' : 'Request this exact question'}
         </button>
       )}
     </div>
