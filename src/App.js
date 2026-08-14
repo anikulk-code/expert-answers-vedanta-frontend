@@ -60,7 +60,9 @@ function App() {
     if (hasAnswers) {
       setAnswers(data.answers);
       setRelatedQuestion(data.relatedQuestion || null);
-      setSearchStatus(apiStatus || 'answered');
+      setSearchStatus(
+        apiStatus === 'qa_match' ? 'answered' : apiStatus || 'answered'
+      );
       // Always defer queue work on hits (API no longer sends it; ignore stale precanned queueInfo)
       setQueueInfo(null);
       return;
@@ -168,6 +170,7 @@ function App() {
         relatedQuestions ||
         youtubeSearchResults ||
         searchStatus === 'unanswered' ||
+        searchStatus === 'related_only' ||
         queueInfo) && (
         <AnswerList
           answers={answers}
