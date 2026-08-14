@@ -33,7 +33,7 @@ function GitaSearch() {
         id="gita-keyword-search"
         type="search"
         className="gita-search-input"
-        placeholder="Keyword, verse, or teacher (e.g. karma, 2.47, Tattwamayananda)"
+        placeholder="Keyword or verse (e.g. karma, 2.47)"
         value={query}
         onChange={(event) => setQuery(event.target.value)}
         autoComplete="off"

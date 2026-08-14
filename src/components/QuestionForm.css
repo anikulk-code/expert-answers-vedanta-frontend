@@ -38,6 +38,13 @@
   cursor: not-allowed;
 }
 
+.ask-hint {
+  margin: 0.75rem 0 0;
+  color: #555;
+  font-size: 0.95rem;
+  line-height: 1.4;
+}
+
 .question-form button {
   background-color: #4a90e2;
   color: white;

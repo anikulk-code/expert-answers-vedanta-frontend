@@ -60,6 +60,9 @@ function QuestionForm({ onSubmit, loading }) {
           rows="4"
           disabled={loading}
         />
+        <p className="ask-hint">
+          We&apos;ll look in the AskSwami Q&amp;A first. If there&apos;s no match, you can request it.
+        </p>
       </div>
       <button type="submit" disabled={loading || !question.trim()}>
         {loading ? 'Searching...' : 'Get Answers'}

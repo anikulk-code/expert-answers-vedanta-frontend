@@ -1,0 +1,24 @@
+.requested-questions {
+  margin: -1rem 0 2rem;
+  text-align: center;
+}
+
+.requested-questions-toggle {
+  background: none;
+  border: none;
+  color: #4a90e2;
+  cursor: pointer;
+  font-size: 0.95rem;
+  font-weight: 600;
+  text-decoration: underline;
+  padding: 0.25rem;
+}
+
+.requested-questions-toggle:hover {
+  color: #357abd;
+}
+
+.requested-questions-list {
+  margin-top: 1rem;
+  text-align: left;
+}

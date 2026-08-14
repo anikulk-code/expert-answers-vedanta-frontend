@@ -9,7 +9,7 @@ import ProgressBar from './components/ProgressBar';
 import GitaRoutes from './components/gita/GitaRoutes';
 import GospelRoutes from './components/gospel/GospelRoutes';
 import { usePrecannedAnswers } from './context/PrecannedAnswersContext';
-import { getPrecannedResponse } from './utils/precannedAnswers';
+import RequestedQuestions from './components/RequestedQuestions';
 
 function App() {
   const showDebug = process.env.REACT_APP_ENABLE_DEBUG === 'true';
@@ -164,6 +164,7 @@ function App() {
   const searchPanel = (
     <>
       <QuestionForm onSubmit={handleQuestionSubmit} loading={loading} />
+      <RequestedQuestions apiUrl={apiUrl} />
       <ProgressBar loading={loading} message={loadingMessage} />
       {error && <div className="error-message">Error: {error}</div>}
       {(answers.length > 0 ||
@@ -212,7 +213,7 @@ function App() {
             to="/"
             className={`tab-button ${activeTab === 'search' ? 'active' : ''}`}
           >
-            Search
+            Ask
           </Link>
           <Link
             to="/explore"
