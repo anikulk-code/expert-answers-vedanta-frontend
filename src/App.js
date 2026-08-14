@@ -213,7 +213,7 @@ function App() {
             to="/"
             className={`tab-button ${activeTab === 'search' ? 'active' : ''}`}
           >
-            Ask
+            Ask your question
           </Link>
           <Link
             to="/explore"
