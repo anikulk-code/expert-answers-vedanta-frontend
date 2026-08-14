@@ -1,10 +1,11 @@
 {
-  "generatedAt": "2026-07-03T23:09:05.297Z",
+  "generatedAt": "2026-08-14T00:00:00.000Z",
   "notes": [
     "Primary mapping is from Swami Sarvapriyananda's official Vedanta Society of New York YouTube Gospel playlist titles.",
     "Printed page numbers were not present in the online Gospel HTML source, so pageRange is null; sourceUrl, chapterNumber, dateText, and sections are provided instead.",
     "Related talks from other swamis are search-derived and have lower mapping confidence unless the title included a Gospel date that matched a chapter date.",
-    "Section mappings are heuristic: related talks use topic-title matching against exact Gospel section titles; Swami Sarvapriyananda part sequences use contiguous section ranges inferred from part order within each chapter/date group."
+    "Section mappings are heuristic: related talks use topic-title matching against exact Gospel section titles; Swami Sarvapriyananda part sequences use contiguous section ranges inferred from part order within each chapter/date group.",
+    "2026-08-14 official playlist sync: added two missing Chapter 7 Swami Sarvapriyananda talks from the official YouTube playlist."
   ],
   "sources": {
     "gospelText": {
@@ -32,7 +33,7 @@
   },
   "stats": {
     "gospelChapterCount": 52,
-    "sarvapriyanandaTalkCount": 67,
+    "sarvapriyanandaTalkCount": 69,
     "relatedTalkCount": 116,
     "relatedSwamiCount": 13,
     "relatedSwamis": [
@@ -523,8 +524,8 @@
         "two",
         "farmers"
       ],
-      "searchText": "7 chapter 7 the master and vijay goswami thursday, december 14, 1882 vijay, the brahmo preacher tendencies from previous births suicide after the vision of god four classes of men parable of the fish and the net worldly-minded forget their lessons bondage removed by strong renunciation parable of the two farmers attachment to \"woman\" creates bondage story of govindaji's priests story of twelve hundred nedas degrading effect of serving others worshipping woman as divine mother difficulties of preaching ego alone the cause of bondage maya creates upadhis seven planes of the mind indescribability of highest plane the \"wicked i\" the \"servant i\" the \"ego of a devotee\" path of bhakti is easy prema-bhakti purity of heart god's grace is the ultimate help vision of divine mother god's nature like that of a child two ways of god-realization constant practice urged. vijay goswami thursday december 1882 brahmo preacher tendencies previous births suicide after vision god four classes men parable fish net worldly-minded forget their lessons bondage removed strong renunciation two farmers swami medhananda gospel of sri ramakrishna 50: god is the doer (dec 14, 1882) swami medhananda god doer dec 1882 medhananda vijay goswami thursday december brahmo preacher tendencies previous births suicide after vision four classes men parable fish net worldly-minded forget their lessons bondage removed strong swami medhananda gospel of sri ramakrishna 54: six types of maya (dec 14, 1882) | swami medhananda six types maya dec 1882 medhananda vijay goswami thursday december brahmo preacher tendencies previous births suicide after vision god four classes men parable fish net worldly-minded forget their lessons bondage swami medhananda gospel of sri ramakrishna 55: why bhakti is the best path (dec 14, 1882) | swami medhananda why bhakti best path dec 1882 medhananda vijay goswami thursday december brahmo preacher tendencies previous births suicide after vision god four classes men parable fish net worldly-minded forget their lessons",
-      "sarvapriyanandaTalkCount": 0,
+      "searchText": "7 chapter 7 the master and vijay goswami thursday, december 14, 1882 vijay, the brahmo preacher tendencies from previous births suicide after the vision of god four classes of men parable of the fish and the net worldly-minded forget their lessons bondage removed by strong renunciation parable of the two farmers attachment to \"woman\" creates bondage story of govindaji's priests story of twelve hundred nedas degrading effect of serving others worshipping woman as divine mother difficulties of preaching ego alone the cause of bondage maya creates upadhis seven planes of the mind indescribability of highest plane the \"wicked i\" the \"servant i\" the \"ego of a devotee\" path of bhakti is easy prema-bhakti purity of heart god's grace is the ultimate help vision of divine mother god's nature like that of a child two ways of god-realization constant practice urged. vijay goswami thursday december 1882 brahmo preacher tendencies previous births suicide after vision god four classes men parable fish net worldly-minded forget their lessons bondage removed strong renunciation two farmers swami medhananda gospel of sri ramakrishna 50: god is the doer (dec 14, 1882) swami medhananda god doer dec 1882 medhananda vijay goswami thursday december brahmo preacher tendencies previous births suicide after vision four classes men parable fish net worldly-minded forget their lessons bondage removed strong swami medhananda gospel of sri ramakrishna 54: six types of maya (dec 14, 1882) | swami medhananda six types maya dec 1882 medhananda vijay goswami thursday december brahmo preacher tendencies previous births suicide after vision god four classes men parable fish net worldly-minded forget their lessons bondage swami medhananda gospel of sri ramakrishna 55: why bhakti is the best path (dec 14, 1882) | swami medhananda why bhakti best path dec 1882 medhananda vijay goswami thursday december brahmo preacher tendencies previous births suicide after vision god four classes men parable fish net worldly-minded forget their lessons gospel | chapter 7: dec 14, 1882 (part 1) | swami sarvapriyananda dec 14, 1882 gospel | chapter 7: dec 14, 1882 (part 2) | swami sarvapriyananda dec 14, 1882",
+      "sarvapriyanandaTalkCount": 2,
       "relatedTalkCount": 3
     },
     {
@@ -4969,7 +4970,63 @@
       ]
     },
     "7": {
-      "sarvapriyanandaTalks": [],
+      "sarvapriyanandaTalks": [
+        {
+          "speaker": "Swami Sarvapriyananda",
+          "title": "Gospel | Chapter 7: Dec 14, 1882 (Part 1) | Swami Sarvapriyananda",
+          "videoId": "NOt3fqRj108",
+          "url": "https://www.youtube.com/watch?v=NOt3fqRj108&list=PLDqahtm2vA72j9p84IDBh66Bw4U-niMxN",
+          "part": 1,
+          "dateText": "Dec 14, 1882",
+          "sectionTitles": [
+            "Vijay, the Brahmo preacher",
+            "Tendencies from previous births",
+            "Suicide after the vision of God",
+            "Four classes of men",
+            "Parable of the fish and the net",
+            "Worldly-minded forget their lessons",
+            "Bondage removed by strong renunciation",
+            "Parable of the two farmers",
+            "Attachment to \"woman\" creates bondage",
+            "Story of Govindaji's priests",
+            "Story of twelve hundred nedas",
+            "Degrading effect of serving others",
+            "Worshipping woman as Divine Mother",
+            "Difficulties of preaching",
+            "Ego alone the cause of bondage"
+          ],
+          "sectionStart": 0,
+          "sectionEnd": 14,
+          "mappingConfidence": "high-title-chapter"
+        },
+        {
+          "speaker": "Swami Sarvapriyananda",
+          "title": "Gospel | Chapter 7: Dec 14, 1882 (Part 2) | Swami Sarvapriyananda",
+          "videoId": "3De9Bea8Wpk",
+          "url": "https://www.youtube.com/watch?v=3De9Bea8Wpk&list=PLDqahtm2vA72j9p84IDBh66Bw4U-niMxN",
+          "part": 2,
+          "dateText": "Dec 14, 1882",
+          "sectionTitles": [
+            "Maya creates upadhis",
+            "Seven planes of the mind",
+            "Indescribability of highest plane",
+            "The \"wicked I\"",
+            "The \"servant I\"",
+            "The \"ego of a devotee\"",
+            "Path of bhakti is easy",
+            "Prema-bhakti",
+            "Purity of heart",
+            "God's grace is the ultimate help",
+            "Vision of Divine Mother",
+            "God's nature like that of a child",
+            "Two ways of God-realization",
+            "Constant practice urged."
+          ],
+          "sectionStart": 15,
+          "sectionEnd": 28,
+          "mappingConfidence": "high-title-chapter"
+        }
+      ],
       "relatedTalks": [
         {
           "speaker": "Swami Medhananda",
