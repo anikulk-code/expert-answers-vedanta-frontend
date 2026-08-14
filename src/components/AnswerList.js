@@ -33,10 +33,11 @@ function AnswerList({
     return (
       <div className="answer-list">
         <div className="no-answers-message">
-          <h2 className="no-answers-title">No direct answer found</h2>
           <div className="answered-related-heading">
-            <span className="answered-related-badge">✓ Answered</span>
-            <p className="suggestions-label">Related questions with answers</p>
+            <h2 className="no-answers-title">No direct answer found</h2>
+            <span className="answered-related-badge">
+              ✓ {relatedQuestions.length} related question{relatedQuestions.length === 1 ? '' : 's'} answered
+            </span>
           </div>
           <div className="related-questions-pills">
             {relatedQuestions.map((q, index) => (

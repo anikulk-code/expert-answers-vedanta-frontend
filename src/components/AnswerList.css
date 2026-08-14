@@ -223,14 +223,13 @@
 .answered-related-heading {
   align-items: center;
   display: flex;
-  flex-direction: column;
-  gap: 10px;
-  margin: 26px 0 18px;
+  flex-wrap: wrap;
+  gap: 12px;
+  justify-content: center;
+  margin: 0 0 20px;
 }
 
-.answered-related-heading .suggestions-label {
-  font-size: 1.2rem;
-  font-weight: 700;
+.answered-related-heading .no-answers-title {
   margin: 0;
 }
 
@@ -241,9 +240,8 @@
   color: #17643a;
   font-size: 0.95rem;
   font-weight: 800;
-  letter-spacing: 0.04em;
+  letter-spacing: 0.01em;
   padding: 6px 13px;
-  text-transform: uppercase;
 }
 
 .no-answers-hint {
