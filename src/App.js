@@ -9,6 +9,7 @@ import ProgressBar from './components/ProgressBar';
 import GitaRoutes from './components/gita/GitaRoutes';
 import GospelRoutes from './components/gospel/GospelRoutes';
 import { usePrecannedAnswers } from './context/PrecannedAnswersContext';
+import { getPrecannedResponse } from './utils/precannedAnswers';
 import RequestedQuestions from './components/RequestedQuestions';
 
 function App() {
