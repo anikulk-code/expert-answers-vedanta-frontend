@@ -245,7 +245,7 @@ function App() {
         <Routes>
           <Route path="/gita/*" element={<GitaRoutes />} />
           <Route path="/gospel/*" element={<GospelRoutes />} />
-          <Route path="/explore" element={<TagsExplorer onSearch={handleQuestionSubmit} />} />
+          <Route path="/explore" element={<TagsExplorer />} />
           <Route
             path="/debug"
             element={
