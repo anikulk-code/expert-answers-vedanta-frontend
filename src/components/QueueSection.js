@@ -25,11 +25,16 @@ function QueueSection({
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [message, setMessage] = useState(null);
   const [showSimilar, setShowSimilar] = useState(false);
+  const [showQueue, setShowQueue] = useState(false);
+  const [queueQuestions, setQueueQuestions] = useState([]);
+  const [loadingQueue, setLoadingQueue] = useState(false);
   const [expandedFromSubtle, setExpandedFromSubtle] = useState(false);
 
   useEffect(() => {
     setQueueInfo(initialQueueInfo || EMPTY_QUEUE_INFO);
     setShowSimilar(false);
+    setShowQueue(false);
+    setQueueQuestions([]);
     setExpandedFromSubtle(false);
     setMessage(null);
   }, [initialQueueInfo, userQuestion]);
@@ -88,7 +93,7 @@ function QueueSection({
           similarQuestions: null,
         }));
         setShowSimilar(false);
-        setMessage({ type: 'success', text: 'Requested. We will use upvotes to decide what to cover next.' });
+        setMessage(null);
       } else {
         setMessage({ type: 'error', text: data.detail || 'Failed to request question' });
       }
@@ -96,6 +101,38 @@ function QueueSection({
       setMessage({ type: 'error', text: 'Error requesting question. Please try again.' });
     } finally {
       setIsSubmitting(false);
+    }
+  };
+
+  const toggleQueue = async () => {
+    if (showQueue) {
+      setShowQueue(false);
+      return;
+    }
+    if (queueQuestions.length > 0) {
+      setShowQueue(true);
+      return;
+    }
+
+    setLoadingQueue(true);
+    try {
+      const response = await fetch(`${apiUrl}/api/questions/queue?limit=10&sort_by=upvotes`);
+      const data = await response.json();
+      if (!response.ok) {
+        setMessage({ type: 'error', text: data.detail || 'Failed to load requested questions' });
+        return;
+      }
+      const own = (userQuestion || '').trim().toLowerCase();
+      setQueueQuestions(
+        (data.questions || []).filter(
+          (item) => (item.question || '').trim().toLowerCase() !== own
+        )
+      );
+      setShowQueue(true);
+    } catch (error) {
+      setMessage({ type: 'error', text: 'Error loading requested questions. Please try again.' });
+    } finally {
+      setLoadingQueue(false);
     }
   };
 
@@ -128,7 +165,7 @@ function QueueSection({
       const data = await response.json();
 
       if (response.ok) {
-        setMessage({ type: 'success', text: `Upvoted. Total: ${data.upvotes}` });
+        setMessage(null);
         setQueueInfo((prev) => {
           if (!prev) return prev;
           const similarQuestions = (prev.similarQuestions || []).map((sq) =>
@@ -136,6 +173,9 @@ function QueueSection({
           );
           return { ...prev, similarQuestions };
         });
+        setQueueQuestions((prev) => prev.map((item) =>
+          item.question === question ? { ...item, voteUp: data.upvotes, upvotes: data.upvotes } : item
+        ));
       } else {
         setMessage({ type: 'error', text: data.detail || 'Failed to upvote' });
       }
@@ -146,7 +186,7 @@ function QueueSection({
 
   const others = otherSimilarQuestions(queueInfo, userQuestion);
   const isSubtle = prominence === 'subtle' && !expandedFromSubtle;
-  const busy = loadingInfo || isSubmitting;
+  const busy = loadingInfo || isSubmitting || loadingQueue;
 
   if (isSubtle) {
     return (
@@ -171,8 +211,11 @@ function QueueSection({
   return (
     <div className={`queue-section queue-section-${prominence}`}>
       {queueInfo.questionInQueue && (
-        <div className="queue-status success">
-          Requested · {queueInfo.upvotes} upvote{queueInfo.upvotes === 1 ? '' : 's'}
+        <div className="queue-submitted">
+          <div className="queue-submitted-message">✓ Your question was submitted.</div>
+          <button className="browse-queue-button" onClick={toggleQueue} disabled={loadingQueue}>
+            {loadingQueue ? 'Loading...' : showQueue ? 'Hide other upvoted questions' : 'See other upvoted questions'}
+          </button>
         </div>
       )}
 
@@ -183,6 +226,28 @@ function QueueSection({
       )}
 
       {loadingInfo && <div className="queue-loading">Checking for similar requests...</div>}
+
+      {queueInfo.questionInQueue && showQueue && (
+        <div className="queue-list submitted-queue-list">
+          {queueQuestions.length > 0 ? queueQuestions.map((item, index) => (
+            <div key={item.id || index} className="question-item">
+              <div className="question-text">{item.question}</div>
+              <button
+                className="upvote-button"
+                onClick={() => handleUpvote(item.question)}
+                disabled={busy}
+              >
+                <span>👍</span>
+                <span className="upvote-count">
+                  {item.voteUp ?? item.votes ?? item.upvotes ?? 0}
+                </span>
+              </button>
+            </div>
+          )) : (
+            <div className="queue-empty">No other requested questions yet.</div>
+          )}
+        </div>
+      )}
 
       {showSimilar && others.length > 0 && !queueInfo.questionInQueue && (
         <div className="similar-questions">

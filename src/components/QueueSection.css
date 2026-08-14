@@ -149,6 +149,48 @@
   border: 1px solid #c3e6cb;
 }
 
+.queue-submitted {
+  align-items: center;
+  background: #e8f6ed;
+  border: 1px solid #9bd3ad;
+  border-radius: 8px;
+  display: flex;
+  flex-wrap: wrap;
+  gap: 1rem;
+  justify-content: space-between;
+  padding: 1rem 1.25rem;
+}
+
+.queue-submitted-message {
+  color: #17643a;
+  font-size: 1.05rem;
+  font-weight: 700;
+}
+
+.browse-queue-button {
+  background: transparent;
+  border: 1px solid #287a4c;
+  border-radius: 6px;
+  color: #17643a;
+  cursor: pointer;
+  font-size: 0.95rem;
+  font-weight: 700;
+  padding: 0.6rem 0.9rem;
+}
+
+.browse-queue-button:hover:not(:disabled) {
+  background: #d7efdf;
+}
+
+.browse-queue-button:disabled {
+  cursor: wait;
+  opacity: 0.65;
+}
+
+.submitted-queue-list {
+  margin-top: 1rem;
+}
+
 .queue-message {
   padding: 0.75rem 1rem;
   border-radius: 6px;
