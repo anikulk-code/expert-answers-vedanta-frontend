@@ -1,6 +1,35 @@
 import React, { useState, useEffect, useCallback, useRef } from 'react';
 import './TagsExplorer.css';
 
+let tagsRequest = null;
+
+function fetchTags(apiUrl) {
+  if (!tagsRequest) {
+    const started = performance.now();
+    console.log('[explore] GET /api/tags start');
+    tagsRequest = fetch(`${apiUrl}/api/tags`)
+      .then((response) => {
+        if (!response.ok) {
+          throw new Error('Failed to load tags');
+        }
+        return response.json();
+      })
+      .then((data) => {
+        console.log(
+          `[explore] GET /api/tags done in ${Math.round(performance.now() - started)}ms count=${Array.isArray(data) ? data.length : 0}`
+        );
+        return data;
+      })
+      .catch((err) => {
+        tagsRequest = null;
+        throw err;
+      });
+  } else {
+    console.log('[explore] GET /api/tags reused in-flight request');
+  }
+  return tagsRequest;
+}
+
 function TagsExplorer() {
   const [tags, setTags] = useState([]);
   const [selectedTag, setSelectedTag] = useState(null);
@@ -16,11 +45,7 @@ function TagsExplorer() {
     const loadTags = async () => {
       try {
         setLoading(true);
-        const response = await fetch(`${apiUrl}/api/tags`);
-        if (!response.ok) {
-          throw new Error('Failed to load tags');
-        }
-        const data = await response.json();
+        const data = await fetchTags(apiUrl);
         setTags(data);
       } catch (err) {
         setError(err.message);
