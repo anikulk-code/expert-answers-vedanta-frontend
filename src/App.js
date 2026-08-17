@@ -20,6 +20,7 @@ function App() {
   const [answers, setAnswers] = useState([]);
   const [relatedQuestion, setRelatedQuestion] = useState(null);
   const [relatedQuestions, setRelatedQuestions] = useState(null);
+  const [relatedAnswers, setRelatedAnswers] = useState([]);
   const [youtubeSearchResults, setYoutubeSearchResults] = useState(null);
   const [searchStatus, setSearchStatus] = useState(null);
   const [queueInfo, setQueueInfo] = useState(null);
@@ -53,6 +54,7 @@ function App() {
   const applyAnswerPayload = (data) => {
     setUserMessage(data.userMessage || null);
     setRelatedQuestions(data.relatedQuestions || null);
+    setRelatedAnswers(data.relatedAnswers || []);
     setYoutubeSearchResults(data.youtubeSearchResults || null);
 
     const apiStatus = data.searchStatus || null;
@@ -63,13 +65,15 @@ function App() {
     // related_only may include full answer payloads for the related pills so a
     // click does not need a second search.
     if (isRelatedOnly) {
-      setAnswers(data.answers || []);
+      const relatedPayloads = data.relatedAnswers || data.answers || [];
+      setAnswers(relatedPayloads);
+      setRelatedAnswers(relatedPayloads);
       setRelatedQuestion(null);
       setQueueInfo(data.queueInfo || null);
       setSearchStatus('related_only');
-      if (!data.relatedQuestions && hasAnswers) {
+      if (!data.relatedQuestions && relatedPayloads.length > 0) {
         setRelatedQuestions(
-          data.answers
+          relatedPayloads
             .map((answer) => answer.questionTitle)
             .filter(Boolean)
         );
@@ -89,6 +93,7 @@ function App() {
     }
 
     setAnswers([]);
+    setRelatedAnswers([]);
     setRelatedQuestion(null);
     setQueueInfo(data.queueInfo || null);
     // Prefer the three-outcome API contract while accepting legacy responses.
@@ -105,7 +110,7 @@ function App() {
       return;
     }
 
-    const cached = answers.find(
+    const cached = [...relatedAnswers, ...answers].find(
       (answer) =>
         (answer.questionTitle || '').trim().toLowerCase() ===
         questionText.toLowerCase()
@@ -118,6 +123,7 @@ function App() {
       setAnswers([cached]);
       setRelatedQuestion(null);
       setRelatedQuestions(null);
+      setRelatedAnswers([]);
       setYoutubeSearchResults(null);
       setSearchStatus('answered');
       setQueueInfo(null);
@@ -133,6 +139,7 @@ function App() {
     setError(null);
     setRelatedQuestion(null);
     setRelatedQuestions(null);
+    setRelatedAnswers([]);
     setYoutubeSearchResults(null);
     setSearchStatus(null);
     setQueueInfo(null);
@@ -224,6 +231,7 @@ function App() {
           answers={answers}
           relatedQuestion={relatedQuestion}
           relatedQuestions={relatedQuestions}
+          relatedAnswers={relatedAnswers}
           youtubeSearchResults={youtubeSearchResults}
           searchStatus={searchStatus}
           queueInfo={queueInfo}

@@ -77,6 +77,7 @@ function AnswerList({
   answers,
   relatedQuestion,
   relatedQuestions,
+  relatedAnswers,
   youtubeSearchResults,
   searchStatus,
   queueInfo,
@@ -215,7 +216,7 @@ function AnswerList({
         <AnswerCard key={index} answer={answer} />
       ))}
 
-      {relatedQuestion && (
+      {relatedQuestion && !relatedAnswers?.length && (
         <div className="related-question-section">
           <h3>Explore Next</h3>
           <button
@@ -227,21 +228,31 @@ function AnswerList({
         </div>
       )}
 
-      {relatedQuestions && relatedQuestions.length > 0 && (
+      {relatedAnswers && relatedAnswers.length > 0 ? (
         <div className="related-question-section">
-          <h3>Related questions</h3>
-          <div className="related-questions-pills">
-            {relatedQuestions.map((question, index) => (
-              <button
-                key={index}
-                className="related-question-pill"
-                onClick={() => onRelatedQuestionClick(question)}
-              >
-                {question}
-              </button>
-            ))}
-          </div>
+          <h3>Related answers</h3>
+          {relatedAnswers.map((answer, index) => (
+            <AnswerCard key={index} answer={answer} showRelatedLabel />
+          ))}
         </div>
+      ) : (
+        relatedQuestions &&
+        relatedQuestions.length > 0 && (
+          <div className="related-question-section">
+            <h3>Related questions</h3>
+            <div className="related-questions-pills">
+              {relatedQuestions.map((question, index) => (
+                <button
+                  key={index}
+                  className="related-question-pill"
+                  onClick={() => onRelatedQuestionClick(question)}
+                >
+                  {question}
+                </button>
+              ))}
+            </div>
+          </div>
+        )
       )}
 
       <QueueSection
