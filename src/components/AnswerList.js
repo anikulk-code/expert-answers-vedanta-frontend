@@ -16,12 +16,36 @@ function timeToSeconds(timeStr) {
   return 0;
 }
 
+// The source playlist titles carry artifacts like a leading "- " or a trailing
+// "?." — tidy them for display without touching the underlying data.
+function cleanTitle(title) {
+  if (!title) return title;
+  return title
+    .replace(/^[\s\-–—]+/, '')
+    .replace(/\?\.+\s*$/, '?')
+    .replace(/\s+/g, ' ')
+    .trim();
+}
+
+// "01:15:00" → "1:15:00", "00:05:10" → "5:10" for a compact badge label
+function displayTime(timeStr) {
+  if (!timeStr) return null;
+  const seconds = timeToSeconds(timeStr);
+  if (!seconds) return null;
+  const h = Math.floor(seconds / 3600);
+  const m = Math.floor((seconds % 3600) / 60);
+  const s = seconds % 60;
+  const mm = h > 0 ? String(m).padStart(2, '0') : String(m);
+  const ss = String(s).padStart(2, '0');
+  return h > 0 ? `${h}:${mm}:${ss}` : `${mm}:${ss}`;
+}
+
 function AnswerCard({ answer, showRelatedLabel = false }) {
+  const hasTimestamp = answer.time && answer.time !== '00:00:00';
   const videoHref =
-    answer.videoLink +
-    (answer.time && answer.time !== '00:00:00'
-      ? `&t=${timeToSeconds(answer.time)}s`
-      : '');
+    answer.videoLink + (hasTimestamp ? `&t=${timeToSeconds(answer.time)}s` : '');
+  const title = cleanTitle(answer.questionTitle);
+  const timeLabel = hasTimestamp ? displayTime(answer.time) : null;
 
   return (
     <div className="answer-card">
@@ -34,7 +58,11 @@ function AnswerCard({ answer, showRelatedLabel = false }) {
               rel="noopener noreferrer"
               className="thumbnail-link"
             >
-              <img src={answer.thumbnail} alt="Video thumbnail" className="thumbnail" />
+              <img
+                src={answer.thumbnail}
+                alt={title || 'Video thumbnail'}
+                className="thumbnail"
+              />
               <div className="play-icon-overlay">
                 <svg
                   width="64"
@@ -46,12 +74,26 @@ function AnswerCard({ answer, showRelatedLabel = false }) {
                   <path d="M8 5v14l11-7z" />
                 </svg>
               </div>
+              {timeLabel && (
+                <span className="timestamp-badge">Answer at {timeLabel}</span>
+              )}
             </a>
           </div>
         )}
         <div className="answer-details">
           {showRelatedLabel && <span className="related-answer-label">Related</span>}
-          {answer.questionTitle && <h3 className="question-title">{answer.questionTitle}</h3>}
+          {title && (
+            <h3 className="question-title">
+              <a
+                href={videoHref}
+                target="_blank"
+                rel="noopener noreferrer"
+                className="question-title-link"
+              >
+                {title}
+              </a>
+            </h3>
+          )}
           <div className="answer-header">
             {answer.videoLink && (
               <a
@@ -60,7 +102,7 @@ function AnswerCard({ answer, showRelatedLabel = false }) {
                 rel="noopener noreferrer"
                 className="full-video-link"
               >
-                View Full Video
+                {hasTimestamp ? 'Watch from the beginning' : 'View full video'}
               </a>
             )}
             {answer.date && answer.date !== '2024-01-01' && (

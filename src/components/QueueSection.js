@@ -25,6 +25,7 @@ function QueueSection({
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [message, setMessage] = useState(null);
   const [showSimilar, setShowSimilar] = useState(false);
+  const [showConfirm, setShowConfirm] = useState(false);
   const [showQueue, setShowQueue] = useState(false);
   const [queueQuestions, setQueueQuestions] = useState([]);
   const [loadingQueue, setLoadingQueue] = useState(false);
@@ -33,6 +34,7 @@ function QueueSection({
   useEffect(() => {
     setQueueInfo(initialQueueInfo || EMPTY_QUEUE_INFO);
     setShowSimilar(false);
+    setShowConfirm(false);
     setShowQueue(false);
     setQueueQuestions([]);
     setExpandedFromSubtle(false);
@@ -93,6 +95,7 @@ function QueueSection({
           similarQuestions: null,
         }));
         setShowSimilar(false);
+        setShowConfirm(false);
         setMessage(null);
       } else {
         setMessage({ type: 'error', text: data.detail || 'Failed to request question' });
@@ -138,6 +141,16 @@ function QueueSection({
 
   const handleRequest = async () => {
     setMessage(null);
+
+    const trimmed = (userQuestion || '').trim();
+    if (trimmed.length < 10) {
+      setMessage({
+        type: 'error',
+        text: 'Please write out your question a little more fully before requesting it.',
+      });
+      return;
+    }
+
     const data = await fetchQueueInfo();
     const others = otherSimilarQuestions(data || queueInfo, userQuestion);
 
@@ -151,7 +164,8 @@ function QueueSection({
       return;
     }
 
-    await submitQuestion();
+    // Let the user see exactly what will be posted before it goes public.
+    setShowConfirm(true);
   };
 
   const handleUpvote = async (question) => {
@@ -236,6 +250,7 @@ function QueueSection({
                 className="upvote-button"
                 onClick={() => handleUpvote(item.question)}
                 disabled={busy}
+                aria-label={`Upvote: ${item.question}`}
               >
                 <span>👍</span>
                 <span className="upvote-count">
@@ -249,6 +264,32 @@ function QueueSection({
         </div>
       )}
 
+      {showConfirm && !queueInfo.questionInQueue && (
+        <div className="request-confirm">
+          <h3>Submit this question as written?</h3>
+          <blockquote className="request-confirm-question">{(userQuestion || '').trim()}</blockquote>
+          <p className="request-confirm-note">
+            It will appear on the public requested-questions list for others to upvote.
+          </p>
+          <div className="request-confirm-actions">
+            <button
+              className="request-question-button"
+              onClick={submitQuestion}
+              disabled={busy}
+            >
+              {isSubmitting ? 'Submitting…' : 'Submit request'}
+            </button>
+            <button
+              className="request-cancel-button"
+              onClick={() => setShowConfirm(false)}
+              disabled={busy}
+            >
+              Cancel
+            </button>
+          </div>
+        </div>
+      )}
+
       {showSimilar && others.length > 0 && !queueInfo.questionInQueue && (
         <div className="similar-questions">
           <h3>A similar request already exists. Upvote it instead?</h3>
@@ -259,6 +300,7 @@ function QueueSection({
                 className="upvote-button"
                 onClick={() => handleUpvote(sq.question)}
                 disabled={busy}
+                aria-label={`Upvote: ${sq.question}`}
               >
                 <span>👍</span>
                 <span className="upvote-count">{sq.upvotes}</span>
@@ -275,7 +317,7 @@ function QueueSection({
         </div>
       )}
 
-      {!queueInfo.questionInQueue && !showSimilar && (
+      {!queueInfo.questionInQueue && !showSimilar && !showConfirm && (
         <button
           className="request-question-button"
           onClick={handleRequest}

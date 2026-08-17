@@ -66,7 +66,7 @@ function RequestedQuestions({ apiUrl }) {
   return (
     <div className="requested-questions">
       <button type="button" className="requested-questions-toggle" onClick={handleToggle}>
-        {open ? 'Hide requested questions' : 'See requested questions'}
+        {open ? 'Hide requested questions' : 'Browse questions others have requested'}
       </button>
       {open && (
         <div className="requested-questions-list">
@@ -80,6 +80,7 @@ function RequestedQuestions({ apiUrl }) {
                   type="button"
                   className="upvote-button"
                   onClick={() => handleUpvote(item.question || item.questionText)}
+                  aria-label={`Upvote: ${item.question || item.questionText}`}
                 >
                   <span>👍</span>
                   <span className="upvote-count">

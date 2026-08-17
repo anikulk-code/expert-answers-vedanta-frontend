@@ -35,13 +35,13 @@
 }
 
 .tag-chip.active {
-  background-color: #4a90e2;
+  background-color: var(--accent);
   color: white;
-  border-color: #4a90e2;
+  border-color: var(--accent);
 }
 
 .tag-chip.active:hover {
-  background-color: #357abd;
+  background-color: var(--accent-dark);
 }
 
 .tag-count {
@@ -155,7 +155,7 @@
 .question-link {
   font-size: 16px;
   font-weight: 500;
-  color: #4a90e2;
+  color: var(--accent);
   text-decoration: none;
   display: block;
   margin-bottom: 8px;
@@ -184,7 +184,7 @@
 }
 
 .question-tag {
-  background-color: #4a90e2;
+  background-color: var(--accent);
   color: white;
   padding: 2px 8px;
   border-radius: 4px;

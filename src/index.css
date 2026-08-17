@@ -4,17 +4,28 @@
   box-sizing: border-box;
 }
 
+:root {
+  /* Shared palette — keep in sync with the Gita/Gospel section accents */
+  --accent: #8b2635;
+  --accent-dark: #6e1d2a;
+  --accent-soft: rgba(139, 38, 53, 0.08);
+  --header-bg: #2c1810;
+  --page-bg: #f7f4ef;
+  --ink: #2c1810;
+  --ink-muted: #6b5344;
+  --serif: Georgia, 'Times New Roman', serif;
+}
+
 body {
   font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto', 'Oxygen',
     'Ubuntu', 'Cantarell', 'Fira Sans', 'Droid Sans', 'Helvetica Neue',
     sans-serif;
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
-  background-color: #f5f5f5;
+  background-color: var(--page-bg);
 }
 
 code {
   font-family: source-code-pro, Menlo, Monaco, Consolas, 'Courier New',
     monospace;
 }
-

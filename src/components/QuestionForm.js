@@ -1,8 +1,9 @@
-import React, { useState } from 'react';
+import React, { useEffect, useRef, useState } from 'react';
 import './QuestionForm.css';
 
 function QuestionForm({ onSubmit, loading }) {
   const [question, setQuestion] = useState('');
+  const textareaRef = useRef(null);
 
   const placeholderQuestions = [
     "Why should I care about spirituality?",
@@ -10,6 +11,13 @@ function QuestionForm({ onSubmit, loading }) {
     "How does Vedanta view suffering?",
     "Does Vedanta promote indifference to social problems?"
   ];
+
+  // Autofocus on desktop only — on mobile it would pop the keyboard over the page.
+  useEffect(() => {
+    if (window.matchMedia('(min-width: 768px)').matches) {
+      textareaRef.current?.focus();
+    }
+  }, []);
 
   const handleSubmit = (e) => {
     e.preventDefault();
@@ -37,8 +45,27 @@ function QuestionForm({ onSubmit, loading }) {
   return (
     <form className="question-form" onSubmit={handleSubmit}>
       <div className="form-group">
-        <label htmlFor="question">Ask a question:</label>
+        <label htmlFor="question" className="visually-hidden">
+          Ask a question
+        </label>
+        <textarea
+          id="question"
+          ref={textareaRef}
+          value={question}
+          onChange={(e) => setQuestion(e.target.value)}
+          onKeyDown={handleKeyDown}
+          placeholder="Ask anything about Vedanta…"
+          rows="3"
+          disabled={loading}
+        />
+        <div className="form-captions">
+          <p className="ask-hint">
+            We&apos;ll look in the AskSwami Q&amp;A first. If there&apos;s no match, you can request it.
+          </p>
+          <p className="key-hint">Enter to submit · Shift+Enter for a new line</p>
+        </div>
         <div className="placeholder-questions">
+          <span className="placeholder-questions-label">Try one of these:</span>
           {placeholderQuestions.map((pq, index) => (
             <button
               key={index}
@@ -51,25 +78,12 @@ function QuestionForm({ onSubmit, loading }) {
             </button>
           ))}
         </div>
-        <textarea
-          id="question"
-          value={question}
-          onChange={(e) => setQuestion(e.target.value)}
-          onKeyDown={handleKeyDown}
-          placeholder="Enter your question here... (Press Enter to submit, Shift+Enter for new line)"
-          rows="4"
-          disabled={loading}
-        />
-        <p className="ask-hint">
-          We&apos;ll look in the AskSwami Q&amp;A first. If there&apos;s no match, you can request it.
-        </p>
       </div>
-      <button type="submit" disabled={loading || !question.trim()}>
-        {loading ? 'Searching...' : 'Get Answers'}
+      <button type="submit" className="submit-button" disabled={loading || !question.trim()}>
+        {loading ? 'Searching…' : 'Get Answers'}
       </button>
     </form>
   );
 }
 
 export default QuestionForm;
-

@@ -41,7 +41,7 @@
 .queue-section-subtle .subtle-link-button {
   background: none;
   border: none;
-  color: #4a90e2;
+  color: var(--accent);
   text-decoration: underline;
   cursor: pointer;
   padding: 0;
@@ -50,7 +50,7 @@
 }
 
 .queue-section-subtle .subtle-link-button:hover {
-  color: #357abd;
+  color: var(--accent-dark);
 }
 
 .queue-section-subtle .subtle-link-button:disabled {
@@ -108,6 +108,70 @@
 }
 
 .request-question-button:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
+}
+
+.request-confirm {
+  background: white;
+  border: 1px solid #e5ded4;
+  border-radius: 8px;
+  padding: 1.25rem 1.5rem;
+  text-align: center;
+}
+
+.request-confirm h3 {
+  margin: 0 0 0.75rem;
+  color: #333;
+}
+
+.request-confirm-question {
+  margin: 0 auto 0.75rem;
+  max-width: 560px;
+  padding: 0.75rem 1rem;
+  background: #faf7f2;
+  border-left: 3px solid var(--accent);
+  border-radius: 4px;
+  color: #333;
+  font-size: 1rem;
+  text-align: left;
+}
+
+.request-confirm-note {
+  margin: 0 0 1rem;
+  color: #6b6257;
+  font-size: 0.85rem;
+}
+
+.request-confirm-actions {
+  display: flex;
+  gap: 0.75rem;
+  justify-content: center;
+  flex-wrap: wrap;
+}
+
+.request-confirm-actions .request-question-button {
+  display: inline-block;
+  width: auto;
+  margin: 0;
+}
+
+.request-cancel-button {
+  padding: 0.85rem 1.25rem;
+  background: transparent;
+  color: #6b6257;
+  border: 1px solid #d8d0c4;
+  border-radius: 6px;
+  font-size: 1rem;
+  font-weight: 500;
+  cursor: pointer;
+}
+
+.request-cancel-button:hover:not(:disabled) {
+  background: #faf7f2;
+}
+
+.request-cancel-button:disabled {
   opacity: 0.6;
   cursor: not-allowed;
 }
@@ -291,13 +355,13 @@
 
 .input-group input:focus {
   outline: none;
-  border-color: #4a90e2;
-  box-shadow: 0 0 0 2px rgba(74, 144, 226, 0.1);
+  border-color: var(--accent);
+  box-shadow: 0 0 0 2px var(--accent-soft);
 }
 
 .input-group button {
   padding: 0.75rem 1.5rem;
-  background: #4a90e2;
+  background: var(--accent);
   color: white;
   border: none;
   border-radius: 6px;
@@ -308,7 +372,7 @@
 }
 
 .input-group button:hover:not(:disabled) {
-  background: #357abd;
+  background: var(--accent-dark);
 }
 
 .input-group button:disabled {

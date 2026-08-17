@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import { Link, Navigate, Route, Routes, useLocation, useNavigate } from 'react-router-dom';
 import './App.css';
 import QuestionForm from './components/QuestionForm';
@@ -46,6 +46,39 @@ function App() {
       navigate('/', { replace: true });
     }
   }, [activeTab, showDebug, navigate]);
+
+  // Per-route document titles (verse/chapter detail derived from the path so the
+  // Gita/Gospel components stay untouched).
+  useEffect(() => {
+    const path = location.pathname;
+    let title = 'Vedanta Answers';
+    const gitaMatch = path.match(/^\/gita\/(\d+)(?:\/(\d+))?/);
+    const gospelMatch = path.match(/^\/gospel\/(\d+)/);
+    if (gitaMatch) {
+      title = gitaMatch[2]
+        ? `Gita ${gitaMatch[1]}.${gitaMatch[2]} · Vedanta Answers`
+        : `Gita Chapter ${gitaMatch[1]} · Vedanta Answers`;
+    } else if (path.startsWith('/gita')) {
+      title = 'Bhagavad Gita · Vedanta Answers';
+    } else if (gospelMatch) {
+      title = `Gospel Chapter ${gospelMatch[1]} · Vedanta Answers`;
+    } else if (path.startsWith('/gospel')) {
+      title = 'Gospel of Sri Ramakrishna · Vedanta Answers';
+    } else if (path.startsWith('/explore')) {
+      title = 'Explore by Topic · Vedanta Answers';
+    }
+    document.title = title;
+  }, [location.pathname]);
+
+  const resultsRef = useRef(null);
+
+  // When a search finishes, bring the results into view without losing the
+  // question box (scroll-margin keeps context above the results).
+  useEffect(() => {
+    if (!loading && searchStatus && resultsRef.current) {
+      resultsRef.current.scrollIntoView({ behavior: 'smooth', block: 'start' });
+    }
+  }, [loading, searchStatus]);
 
   const apiUrl = process.env.REACT_APP_API_URL
     ? process.env.REACT_APP_API_URL
@@ -227,6 +260,7 @@ function App() {
         searchStatus === 'unanswered' ||
         searchStatus === 'related_only' ||
         queueInfo) && (
+        <div ref={resultsRef} className="results-anchor">
         <AnswerList
           answers={answers}
           relatedQuestion={relatedQuestion}
@@ -240,6 +274,7 @@ function App() {
           onRelatedQuestionClick={handleRelatedQuestionClick}
           apiUrl={apiUrl}
         />
+        </div>
       )}
     </>
   );
@@ -248,18 +283,18 @@ function App() {
     <div className="App">
       <header className="App-header">
         <h1>Vedanta Answers</h1>
-        <p>Get answers from YouTube videos by Swami Sarvapriyananda</p>
-        <div className="trust-badge">
+        <p className="App-tagline">
+          Answers from Swami Sarvapriyananda&apos;s talks
+          {' · '}
           <a
             href="https://www.youtube.com/playlist?list=PLDqahtm2vA70VohJ__IobJSOGFJ2SdaRO"
             target="_blank"
             rel="noopener noreferrer"
-            className="trust-badge-text"
-            style={{ textDecoration: 'none', color: 'inherit' }}
+            className="source-link"
           >
-            Source: AskSwami Q&A | Swami Sarvapriyananda
+            Source: AskSwami Q&amp;A
           </a>
-        </div>
+        </p>
       </header>
 
       <main className="App-main">
@@ -268,13 +303,13 @@ function App() {
             to="/"
             className={`tab-button ${activeTab === 'search' ? 'active' : ''}`}
           >
-            Ask your question
+            Ask
           </Link>
           <Link
             to="/explore"
             className={`tab-button ${activeTab === 'explore' ? 'active' : ''}`}
           >
-            Explore by Topic
+            Explore
           </Link>
           <Link
             to="/gita"
