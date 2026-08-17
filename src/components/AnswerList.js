@@ -127,6 +127,7 @@ function AnswerList({
   currentQuestion,
   onRelatedQuestionClick,
   apiUrl,
+  requestsEnabled = false,
 }) {
   // Related-only: show answer cards when payloads are present (no second search).
   if (searchStatus === 'related_only') {
@@ -142,12 +143,14 @@ function AnswerList({
           <div className="no-answers-message no-answers-message-strong">
             <h2 className="no-answers-title">No related Q&amp;A found</h2>
           </div>
-          <QueueSection
-            queueInfo={queueInfo}
-            userQuestion={currentQuestion}
-            apiUrl={apiUrl}
-            prominence="very-prominent"
-          />
+          {requestsEnabled && (
+            <QueueSection
+              queueInfo={queueInfo}
+              userQuestion={currentQuestion}
+              apiUrl={apiUrl}
+              prominence="very-prominent"
+            />
+          )}
         </div>
       );
     }
@@ -182,12 +185,14 @@ function AnswerList({
             ))}
           </div>
         )}
-        <QueueSection
-          queueInfo={queueInfo}
-          userQuestion={currentQuestion}
-          apiUrl={apiUrl}
-          prominence="prominent"
-        />
+        {requestsEnabled && (
+          <QueueSection
+            queueInfo={queueInfo}
+            userQuestion={currentQuestion}
+            apiUrl={apiUrl}
+            prominence="prominent"
+          />
+        )}
       </div>
     );
   }
@@ -205,12 +210,14 @@ function AnswerList({
         {youtubeSearchResults.map((answer, index) => (
           <AnswerCard key={index} answer={answer} />
         ))}
-        <QueueSection
-          queueInfo={queueInfo}
-          userQuestion={currentQuestion}
-          apiUrl={apiUrl}
-          prominence="prominent"
-        />
+        {requestsEnabled && (
+          <QueueSection
+            queueInfo={queueInfo}
+            userQuestion={currentQuestion}
+            apiUrl={apiUrl}
+            prominence="prominent"
+          />
+        )}
       </div>
     );
   }
@@ -222,12 +229,14 @@ function AnswerList({
         <div className="no-answers-message no-answers-message-strong">
           <h2 className="no-answers-title">No related Q&amp;A found</h2>
         </div>
-        <QueueSection
-          queueInfo={queueInfo}
-          userQuestion={currentQuestion}
-          apiUrl={apiUrl}
-          prominence="very-prominent"
-        />
+        {requestsEnabled && (
+          <QueueSection
+            queueInfo={queueInfo}
+            userQuestion={currentQuestion}
+            apiUrl={apiUrl}
+            prominence="very-prominent"
+          />
+        )}
       </div>
     );
   }
@@ -297,12 +306,14 @@ function AnswerList({
         )
       )}
 
-      <QueueSection
-        queueInfo={queueInfo}
-        userQuestion={currentQuestion}
-        apiUrl={apiUrl}
-        prominence="subtle"
-      />
+      {requestsEnabled && (
+        <QueueSection
+          queueInfo={queueInfo}
+          userQuestion={currentQuestion}
+          apiUrl={apiUrl}
+          prominence="subtle"
+        />
+      )}
     </div>
   );
 }

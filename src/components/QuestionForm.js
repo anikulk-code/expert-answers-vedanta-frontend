@@ -1,7 +1,7 @@
 import React, { useEffect, useRef, useState } from 'react';
 import './QuestionForm.css';
 
-function QuestionForm({ onSubmit, loading }) {
+function QuestionForm({ onSubmit, loading, requestsEnabled = false }) {
   const [question, setQuestion] = useState('');
   const textareaRef = useRef(null);
 
@@ -60,7 +60,9 @@ function QuestionForm({ onSubmit, loading }) {
         />
         <div className="form-captions">
           <p className="ask-hint">
-            We&apos;ll look in the AskSwami Q&amp;A first. If there&apos;s no match, you can request it.
+            {requestsEnabled
+              ? "We'll look in the AskSwami Q&A first. If there's no match, you can request it."
+              : "We'll look in the AskSwami Q&A for a matching answer."}
           </p>
           <p className="key-hint">Enter to submit · Shift+Enter for a new line</p>
         </div>

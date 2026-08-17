@@ -11,11 +11,13 @@ import GospelRoutes from './components/gospel/GospelRoutes';
 import { usePrecannedAnswers } from './context/PrecannedAnswersContext';
 import { getPrecannedResponse } from './utils/precannedAnswers';
 import RequestedQuestions from './components/RequestedQuestions';
+import { useRequestQueue } from './hooks/useRequestQueue';
 
 function App() {
   const showDebug = process.env.REACT_APP_ENABLE_DEBUG === 'true';
   const location = useLocation();
   const navigate = useNavigate();
+  const { requestsEnabled, withParams } = useRequestQueue();
 
   const [answers, setAnswers] = useState([]);
   const [relatedQuestion, setRelatedQuestion] = useState(null);
@@ -250,8 +252,12 @@ function App() {
 
   const searchPanel = (
     <>
-      <QuestionForm onSubmit={handleQuestionSubmit} loading={loading} />
-      <RequestedQuestions apiUrl={apiUrl} />
+      <QuestionForm
+        onSubmit={handleQuestionSubmit}
+        loading={loading}
+        requestsEnabled={requestsEnabled}
+      />
+      {requestsEnabled && <RequestedQuestions apiUrl={apiUrl} />}
       <ProgressBar loading={loading} message={loadingMessage} />
       {error && <div className="error-message">Error: {error}</div>}
       {(answers.length > 0 ||
@@ -273,6 +279,7 @@ function App() {
           currentQuestion={currentQuestion}
           onRelatedQuestionClick={handleRelatedQuestionClick}
           apiUrl={apiUrl}
+          requestsEnabled={requestsEnabled}
         />
         </div>
       )}
@@ -300,32 +307,32 @@ function App() {
       <main className="App-main">
         <div className="tabs">
           <Link
-            to="/"
+            to={withParams('/')}
             className={`tab-button ${activeTab === 'search' ? 'active' : ''}`}
           >
             Ask
           </Link>
           <Link
-            to="/explore"
+            to={withParams('/explore')}
             className={`tab-button ${activeTab === 'explore' ? 'active' : ''}`}
           >
             Explore
           </Link>
           <Link
-            to="/gita"
+            to={withParams('/gita')}
             className={`tab-button ${activeTab === 'gita' ? 'active' : ''}`}
           >
             Gita
           </Link>
           <Link
-            to="/gospel"
+            to={withParams('/gospel')}
             className={`tab-button ${activeTab === 'gospel' ? 'active' : ''}`}
           >
             Gospel
           </Link>
           {showDebug && (
             <Link
-              to="/debug"
+              to={withParams('/debug')}
               className={`tab-button ${activeTab === 'debug' ? 'active' : ''}`}
             >
               Debug Search
