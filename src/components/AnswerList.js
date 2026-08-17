@@ -16,6 +16,63 @@ function timeToSeconds(timeStr) {
   return 0;
 }
 
+function AnswerCard({ answer, showRelatedLabel = false }) {
+  const videoHref =
+    answer.videoLink +
+    (answer.time && answer.time !== '00:00:00'
+      ? `&t=${timeToSeconds(answer.time)}s`
+      : '');
+
+  return (
+    <div className="answer-card">
+      <div className="answer-content">
+        {answer.thumbnail && (
+          <div className="thumbnail-container">
+            <a
+              href={videoHref}
+              target="_blank"
+              rel="noopener noreferrer"
+              className="thumbnail-link"
+            >
+              <img src={answer.thumbnail} alt="Video thumbnail" className="thumbnail" />
+              <div className="play-icon-overlay">
+                <svg
+                  width="64"
+                  height="64"
+                  viewBox="0 0 24 24"
+                  fill="white"
+                  xmlns="http://www.w3.org/2000/svg"
+                >
+                  <path d="M8 5v14l11-7z" />
+                </svg>
+              </div>
+            </a>
+          </div>
+        )}
+        <div className="answer-details">
+          {showRelatedLabel && <span className="related-answer-label">Related</span>}
+          {answer.questionTitle && <h3 className="question-title">{answer.questionTitle}</h3>}
+          <div className="answer-header">
+            {answer.videoLink && (
+              <a
+                href={answer.videoLink}
+                target="_blank"
+                rel="noopener noreferrer"
+                className="full-video-link"
+              >
+                View Full Video
+              </a>
+            )}
+            {answer.date && answer.date !== '2024-01-01' && (
+              <span className="date">{answer.date}</span>
+            )}
+          </div>
+        </div>
+      </div>
+    </div>
+  );
+}
+
 function AnswerList({
   answers,
   relatedQuestion,
@@ -28,17 +85,48 @@ function AnswerList({
   onRelatedQuestionClick,
   apiUrl,
 }) {
-  // Handle related questions fallback
-  if (searchStatus === 'related_only' && relatedQuestions && relatedQuestions.length > 0) {
+  // Related-only: show answer cards when payloads are present (no second search).
+  if (searchStatus === 'related_only') {
+    const relatedAnswers = answers && answers.length > 0 ? answers : [];
+    const relatedCount =
+      relatedAnswers.length ||
+      (relatedQuestions && relatedQuestions.length) ||
+      0;
+
+    if (relatedCount === 0) {
+      return (
+        <div className="answer-list">
+          <div className="no-answers-message no-answers-message-strong">
+            <h2 className="no-answers-title">No related Q&amp;A found</h2>
+          </div>
+          <QueueSection
+            queueInfo={queueInfo}
+            userQuestion={currentQuestion}
+            apiUrl={apiUrl}
+            prominence="very-prominent"
+          />
+        </div>
+      );
+    }
+
     return (
       <div className="answer-list">
         <div className="no-answers-message">
           <div className="answered-related-heading">
             <h2 className="no-answers-title">No direct answer found</h2>
             <span className="answered-related-badge">
-              ✓ {relatedQuestions.length} related question{relatedQuestions.length === 1 ? '' : 's'} answered
+              ✓ {relatedCount} related question{relatedCount === 1 ? '' : 's'} answered
             </span>
           </div>
+          <p className="no-answers-hint">
+            Here {relatedCount === 1 ? 'is a closely related answer' : 'are closely related answers'} from AskSwami.
+          </p>
+        </div>
+        {relatedAnswers.length > 0 ? (
+          relatedAnswers.map((answer, index) => (
+            <AnswerCard key={index} answer={answer} showRelatedLabel />
+          ))
+        ) : (
           <div className="related-questions-pills">
             {relatedQuestions.map((q, index) => (
               <button
@@ -50,7 +138,7 @@ function AnswerList({
               </button>
             ))}
           </div>
-        </div>
+        )}
         <QueueSection
           queueInfo={queueInfo}
           userQuestion={currentQuestion}
@@ -72,56 +160,7 @@ function AnswerList({
         )}
         <h2>Related Videos ({youtubeSearchResults.length})</h2>
         {youtubeSearchResults.map((answer, index) => (
-          <div key={index} className="answer-card youtube-search-result">
-            <div className="answer-content">
-              {answer.thumbnail && (
-                <div className="thumbnail-container">
-                  <a
-                    href={
-                      answer.videoLink +
-                      (answer.time && answer.time !== '00:00:00'
-                        ? `&t=${timeToSeconds(answer.time)}s`
-                        : '')
-                    }
-                    target="_blank"
-                    rel="noopener noreferrer"
-                    className="thumbnail-link"
-                  >
-                    <img src={answer.thumbnail} alt="Video thumbnail" className="thumbnail" />
-                    <div className="play-icon-overlay">
-                      <svg
-                        width="64"
-                        height="64"
-                        viewBox="0 0 24 24"
-                        fill="white"
-                        xmlns="http://www.w3.org/2000/svg"
-                      >
-                        <path d="M8 5v14l11-7z" />
-                      </svg>
-                    </div>
-                  </a>
-                </div>
-              )}
-              <div className="answer-details">
-                {answer.questionTitle && <h3 className="question-title">{answer.questionTitle}</h3>}
-                <div className="answer-header">
-                  {answer.videoLink && (
-                    <a
-                      href={answer.videoLink}
-                      target="_blank"
-                      rel="noopener noreferrer"
-                      className="full-video-link"
-                    >
-                      View Full Video
-                    </a>
-                  )}
-                  {answer.date && answer.date !== '2024-01-01' && (
-                    <span className="date">{answer.date}</span>
-                  )}
-                </div>
-              </div>
-            </div>
-          </div>
+          <AnswerCard key={index} answer={answer} />
         ))}
         <QueueSection
           queueInfo={queueInfo}
@@ -173,57 +212,7 @@ function AnswerList({
         )}
       </div>
       {answers.map((answer, index) => (
-        <div key={index} className="answer-card">
-          <div className="answer-content">
-            {answer.thumbnail && (
-              <div className="thumbnail-container">
-                <a
-                  href={
-                    answer.videoLink +
-                    (answer.time && answer.time !== '00:00:00'
-                      ? `&t=${timeToSeconds(answer.time)}s`
-                      : '')
-                  }
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  className="thumbnail-link"
-                >
-                  <img src={answer.thumbnail} alt="Video thumbnail" className="thumbnail" />
-                  <div className="play-icon-overlay">
-                    <svg
-                      width="64"
-                      height="64"
-                      viewBox="0 0 24 24"
-                      fill="white"
-                      xmlns="http://www.w3.org/2000/svg"
-                    >
-                      <path d="M8 5v14l11-7z" />
-                    </svg>
-                  </div>
-                </a>
-              </div>
-            )}
-            <div className="answer-details">
-              {answer.questionTitle && <h3 className="question-title">{answer.questionTitle}</h3>}
-              <div className="answer-header">
-                {answer.videoLink && (
-                  <a
-                    href={answer.videoLink}
-                    target="_blank"
-                    rel="noopener noreferrer"
-                    className="full-video-link"
-                  >
-                    View Full Video
-                  </a>
-                )}
-                {answer.date && answer.date !== '2024-01-01' && (
-                  <span className="date">{answer.date}</span>
-                )}
-              </div>
-              {answer.region && <div className="region">Region: {answer.region}</div>}
-            </div>
-          </div>
-        </div>
+        <AnswerCard key={index} answer={answer} />
       ))}
 
       {relatedQuestion && (
