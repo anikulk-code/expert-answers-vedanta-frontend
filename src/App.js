@@ -57,6 +57,25 @@ function App() {
 
     const apiStatus = data.searchStatus || null;
     const hasAnswers = Boolean(data.answers && data.answers.length > 0);
+    const isRelatedOnly =
+      apiStatus === 'related_only' || apiStatus === 'related_questions';
+
+    // related_only may include full answer payloads for the related pills so a
+    // click does not need a second search.
+    if (isRelatedOnly) {
+      setAnswers(data.answers || []);
+      setRelatedQuestion(null);
+      setQueueInfo(data.queueInfo || null);
+      setSearchStatus('related_only');
+      if (!data.relatedQuestions && hasAnswers) {
+        setRelatedQuestions(
+          data.answers
+            .map((answer) => answer.questionTitle)
+            .filter(Boolean)
+        );
+      }
+      return;
+    }
 
     if (hasAnswers) {
       setAnswers(data.answers);
@@ -75,11 +94,38 @@ function App() {
     // Prefer the three-outcome API contract while accepting legacy responses.
     if (apiStatus === 'tags_fallback' || apiStatus === 'no_results') {
       setSearchStatus('unanswered');
-    } else if (apiStatus === 'related_questions') {
-      setSearchStatus('related_only');
     } else {
       setSearchStatus(apiStatus || 'unanswered');
     }
+  };
+
+  const handleRelatedQuestionClick = (question) => {
+    const questionText = (question || '').trim();
+    if (!questionText) {
+      return;
+    }
+
+    const cached = answers.find(
+      (answer) =>
+        (answer.questionTitle || '').trim().toLowerCase() ===
+        questionText.toLowerCase()
+    );
+    if (cached) {
+      setError(null);
+      setLoading(false);
+      setLoadingMessage('');
+      setCurrentQuestion(questionText);
+      setAnswers([cached]);
+      setRelatedQuestion(null);
+      setRelatedQuestions(null);
+      setYoutubeSearchResults(null);
+      setSearchStatus('answered');
+      setQueueInfo(null);
+      setUserMessage(null);
+      return;
+    }
+
+    handleQuestionSubmit(questionText);
   };
 
   const handleQuestionSubmit = async (question) => {
@@ -183,7 +229,7 @@ function App() {
           queueInfo={queueInfo}
           userMessage={userMessage}
           currentQuestion={currentQuestion}
-          onRelatedQuestionClick={handleQuestionSubmit}
+          onRelatedQuestionClick={handleRelatedQuestionClick}
           apiUrl={apiUrl}
         />
       )}
