@@ -487,6 +487,104 @@
   margin-bottom: 0.45rem;
 }
 
+.gospel-coverage-summary {
+  margin: 0 0 1.5rem;
+  font-size: 0.85rem;
+  color: #8a735f;
+  font-family: Georgia, 'Times New Roman', serif;
+}
+
+.gospel-date-label {
+  color: #8a735f;
+}
+
+.gospel-talk-card .gita-lecture-title {
+  margin-bottom: 1rem;
+}
+
+.gospel-talk-coverage {
+  margin: 0 0 1rem;
+  padding: 0.9rem 1rem;
+  background: #f3ebe0;
+  border-radius: 4px;
+}
+
+.gospel-coverage-label {
+  margin: 0 0 0.6rem;
+  font-size: 0.75rem;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  color: #8a735f;
+  font-family: Georgia, 'Times New Roman', serif;
+}
+
+.gospel-talk-coverage .gospel-section-list {
+  font-size: 0.95rem;
+  line-height: 1.6;
+}
+
+.gospel-coverage-none {
+  margin: 0 0 1rem;
+  font-size: 0.92rem;
+  font-style: italic;
+  color: #8a735f;
+  font-family: Georgia, 'Times New Roman', serif;
+}
+
+.gospel-uncovered {
+  margin-top: 2rem;
+  padding: 1.5rem;
+  background: #f7f2ea;
+  border: 1px dashed #d4c4b0;
+  border-radius: 4px;
+}
+
+.gospel-uncovered-list {
+  list-style: none;
+  padding-left: 0;
+  margin-bottom: 1rem;
+  font-size: 0.95rem;
+  color: #6b5344;
+}
+
+.gospel-uncovered-number {
+  color: #b5a08a;
+}
+
+.gospel-landing-note {
+  margin: 0 0 1.25rem;
+  font-size: 0.9rem;
+  color: #8a735f;
+  font-family: Georgia, 'Times New Roman', serif;
+}
+
+.gospel-chapter-badge {
+  align-self: flex-start;
+  margin-top: 0.35rem;
+  padding: 0.15rem 0.5rem;
+  border-radius: 3px;
+  font-size: 0.7rem;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  font-family: Georgia, 'Times New Roman', serif;
+  background: #f0e4d4;
+  color: #8b2635;
+}
+
+.gospel-chapter-badge-empty {
+  background: #ece7e0;
+  color: #9c8a76;
+}
+
+.gita-chapter-card-empty {
+  background: #f5f2ed;
+  border-style: dashed;
+}
+
+.gita-chapter-card-empty .gita-chapter-name {
+  color: #6b5344;
+}
+
 @media (max-width: 600px) {
   .gita-verse-nav {
     flex-direction: column;

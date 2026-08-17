@@ -48,6 +48,7 @@ function buildSearchText(chapter, sarvapriyanandaTalks, relatedTalks) {
     `chapter ${chapter.chapterNumber}`,
     chapter.title,
     chapter.dateText,
+    ...(chapter.dateTexts || []),
     ...(chapter.sections || []),
     ...(chapter.keywords || []),
     ...sarvapriyanandaTalks.flatMap((talk) => [
@@ -78,6 +79,9 @@ function buildGospelMap(source) {
       volume: chapter.volume,
       title: chapter.title,
       dateText: chapter.dateText,
+      // A Gospel chapter often spans several sittings; showing only the first
+      // date made multi-day chapters look like single-day ones.
+      dateTexts: [...new Set((chapter.dateTexts || []).filter(Boolean))],
       sourceUrl: chapter.sourceUrl,
       sections: chapter.sections || [],
       keywords: chapter.keywords || [],
