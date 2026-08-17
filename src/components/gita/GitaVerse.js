@@ -21,22 +21,29 @@ function GitaVerse() {
     Number.isNaN(chapter) ||
     Number.isNaN(verse) ||
     chapter < 1 ||
-    chapter > 18
+    chapter > 18 ||
+    verse < 1
   ) {
     return <Navigate to={withTeacherQuery('/gita')} replace />;
   }
 
-  const verseCount = data ? getChapterVerseCount(data, chapter) : 0;
-  if (verse < 1 || verse > verseCount) {
-    return <Navigate to={withTeacherQuery(`/gita/${chapter}`)} replace />;
-  }
-
+  // Wait for map data before checking verseCount — otherwise verseCount is 0
+  // while loading and deep links like /gita/2/47 incorrectly redirect to /gita/2.
   if (loading) {
     return <div className="gita-status">Loading verse…</div>;
   }
 
   if (error) {
     return <div className="gita-status gita-status-error">{error}</div>;
+  }
+
+  if (!data) {
+    return <div className="gita-status">Loading verse…</div>;
+  }
+
+  const verseCount = getChapterVerseCount(data, chapter);
+  if (verse > verseCount) {
+    return <Navigate to={withTeacherQuery(`/gita/${chapter}`)} replace />;
   }
 
   const entry = data.verseMap?.[verseKey(chapter, verse)];
